@@ -13,6 +13,7 @@ managing personal notes with archive and trash functionality.
 - **Database**: MongoDB with Mongoose (connection caching pattern in
   `src/libs/mongodb.ts`)
 - **UI**: shadcn/ui components with Radix UI primitives, Tailwind CSS v4
+- **Animations**: Framer Motion for component animations and transitions
 - **Theming**: next-themes with CSS variables and system preference support
 - **Fonts**: Roboto family (regular, serif, mono) configured in
   `src/configs/fonts.ts`
@@ -42,6 +43,85 @@ import { AppSidebar } from '~/components/app-sidebar';
   - `base.tsx`: Main provider wrapper
   - `theme.tsx`: Theme provider with next-themes
   - `app.tsx`: App-specific providers (sidebar, header)
+- **Layout Components**: Modular layout structure in `src/components/layout/`
+  - `header/index.tsx`: Main header component
+  - `header/logo.tsx`: Logo component
+  - `header/search.tsx`: Search component
+  - `sidebar.tsx`: Sidebar navigation component
+- **Enhanced Components**: shadcn-studio variants with advanced features
+  - `shadcn-studio/button.tsx`: Animated button with ripple effects using Framer
+    Motion
+  - `shadcn-studio/input.tsx`: Enhanced input with label and icon support
+
+### Component Composition Patterns
+
+Use composition for complex UI components:
+
+```typescript
+// Header composition pattern
+export function LayoutHeader() {
+  return (
+    <header>
+      <div className="flex items-center gap-4">
+        <SidebarTrigger />
+        <HeaderLogo className="hidden md:flex" />
+        <HeaderSearch className="md:hidden" />
+      </div>
+      <HeaderSearch className="hidden md:block" />
+      <Avatar />
+    </header>
+  );
+}
+```
+
+Centralize route configuration for maintainable navigation:
+
+```typescript
+// Route configuration pattern
+interface Route {
+  label: string;
+  href: string;
+  icon: ComponentType;
+}
+
+export const routes: Route[] = [
+  { label: 'Notes', href: '/', icon: FileTextIcon },
+  { label: 'Archived', href: '/archived', icon: ArchiveIcon },
+  { label: 'Trash', href: '/trash', icon: Trash2Icon },
+];
+```
+
+### Animation Patterns
+
+Use Framer Motion for smooth component animations:
+
+```typescript
+// Animated button with ripple effect
+import { Button } from '~/components/ui/shadcn-studio/button';
+
+<Button variant="default" scale={10}>
+  Click me!
+</Button>
+```
+
+### Enhanced UI Components
+
+Leverage shadcn-studio components for advanced features:
+
+```typescript
+// Enhanced input with label and icons
+import { Input } from '~/components/ui/shadcn-studio/input';
+
+<Input
+  label="Search notes"
+  placeholder="Search notes (e.g., 'meeting', 'project')"
+  startIcon={SearchIcon}
+  classNames={{
+    container: 'max-w-3xl',
+    input: 'h-8',
+  }}
+/>
+```
 
 ### Route Groups
 
@@ -114,6 +194,22 @@ function NoteForm() {
   Trash (/trash)
 - Active route highlighting using `usePathname()` from Next.js
 - Header with search functionality and user avatar
+- **Route Configuration**: Centralized route definitions in
+  `src/configs/route.ts`
+
+```typescript
+import { routes } from '~/configs/route';
+
+// Routes are defined with label, href, and icon
+routes.map((item) => (
+  <SidebarMenuButton asChild isActive={pathname === item.href}>
+    <Link href={item.href}>
+      <item.icon />
+      <span>{item.label}</span>
+    </Link>
+  </SidebarMenuButton>
+));
+```
 
 ### Environment Variables
 
@@ -193,7 +289,8 @@ Theme provider wraps the entire app in `src/app/layout.tsx`:
   features
 - `src/components/provider/` - Provider components (base, theme, app)
 - `src/components/layout/` - Layout components (header, sidebar)
-- `src/configs/` - Configuration files (fonts, site metadata, env)
+- `src/components/layout/header/` - Header sub-components (logo, search)
+- `src/configs/` - Configuration files (fonts, site metadata, env, routes)
 - `src/hooks/` - Custom React hooks
 - `src/libs/` - Utility libraries (MongoDB, utils)
 - `src/styles/` - Global CSS and styling
@@ -231,5 +328,22 @@ Follow Conventional Commits specification:
 - Server components for static content and data fetching
 - Use React Hook Form for form handling with Zod validation
 - Leverage shadcn-studio components for enhanced UI features
-- Follow route groups pattern for organized page layouts</content>
+- Follow route groups pattern for organized page layouts
+- **Component Composition**: Break down complex components into smaller,
+  reusable parts
+- **Route Configuration**: Centralize navigation routes in
+  `src/configs/route.ts`
+- **Responsive Design**: Use responsive classes for mobile-first approach
+  (`md:hidden`, `md:flex`)
+- **Sidebar Integration**: Use `useSidebar()` hook for mobile sidebar management
+- **Animation Patterns**: Use Framer Motion for smooth component transitions and
+  effects
+- **Component Composition**: Break down complex components into smaller,
+  reusable parts
+- **Route Configuration**: Centralize navigation routes in
+  `src/configs/route.ts`
+- **Responsive Design**: Use responsive classes for mobile-first approach
+  (`md:hidden`, `md:flex`)
+- **Sidebar Integration**: Use `useSidebar()` hook for mobile sidebar
+  management</content>
   <parameter name="filePath">d:\Projects\Applications\Portfolio\notes\.github\copilot-instructions.md

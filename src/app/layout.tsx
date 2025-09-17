@@ -11,17 +11,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
       <body
         className={`${fontRoboto.variable} ${fontRobotoSerif.variable} ${fontRobotoMono.variable} antialiased`}
       >
-        <Provider>
-          {children}
-
-          {/*
-            <AppSidebar />
-            <SidebarInset>
-              <AppHeader />
-              <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
-            </SidebarInset>
-          */}
-        </Provider>
+        <Provider>{children}</Provider>
       </body>
     </html>
   );

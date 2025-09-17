@@ -1,39 +1,25 @@
 'use client';
 
-import { Menu, NotepadText, Search } from 'lucide-react';
-
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { Button } from '~/components/ui/shadcn-studio/button';
-import { Input } from '~/components/ui/shadcn-studio/input';
+import { SidebarTrigger } from '~/components/ui/sidebar';
+
+import { HeaderLogo } from './logo';
+import { HeaderSearch } from './search';
 
 export function LayoutHeader() {
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-4 md:px-6">
-      <div className="flex flex-1 items-center gap-16">
-        <div className="flex items-center gap-2">
-          <Button className="cursor-pointer" size="icon" variant="ghost">
-            <Menu />
-          </Button>
-
-          <NotepadText size={32} />
-          <span className="text-2xl">Notes</span>
+    <header className="bg-background z-20 flex h-16 shrink-0 items-center justify-between gap-4 border-b px-4 md:px-6">
+      <div className="flex flex-1 items-center gap-4 lg:gap-26">
+        <div className="flex flex-1 items-center gap-2 md:flex-0">
+          <SidebarTrigger className="cursor-pointer" />
+          <HeaderLogo className="hidden md:flex" />
+          <HeaderSearch className="md:hidden" />
         </div>
 
-        <Input
-          classNames={{
-            container: 'max-w-xl hidden lg:block',
-            input: 'h-8',
-          }}
-          placeholder='Search notes (e.g., "meeting", "project")'
-          startIcon={Search}
-          type="text"
-        />
+        <HeaderSearch className="hidden md:block" />
       </div>
 
       <div className="flex items-center gap-2">
-        <Button className="lg:hidden" size="icon" variant="ghost">
-          <Search />
-        </Button>
         <Avatar className="cursor-pointer">
           <AvatarImage
             alt="@shadcn"

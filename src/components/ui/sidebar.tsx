@@ -2,12 +2,12 @@
 
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { PanelLeftIcon } from 'lucide-react';
+import { MenuIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Separator } from '~/components/ui/separator';
+import { Button } from '~/components/ui/shadcn-studio/button';
 import {
   Sheet,
   SheetContent,
@@ -75,7 +75,7 @@ const SidebarContext = React.createContext<SidebarContextProps | null>(null);
  * Must be used within a SidebarProvider.
  * @returns The sidebar context with state and control functions.
  */
-function useSidebar() {
+export function useSidebar() {
   const context = React.useContext(SidebarContext);
 
   if (!context) {
@@ -312,18 +312,31 @@ export function Sidebar({
 
 /**
  * Button component that toggles the sidebar open/closed state.
- * Includes keyboard shortcut support (Ctrl/Cmd + B).
+ * Includes keyboard shortcut support (Ctrl/Cmd + B) and proper accessibility features.
+ *
+ * @example
+ * ```tsx
+ * <SidebarTrigger />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SidebarTrigger
+ *   className="md:hidden"
+ *   onClick={handleCustomClick}
+ * />
+ * ```
  */
 export function SidebarTrigger({
   className,
   onClick,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: Omit<React.ComponentProps<typeof Button>, 'children'>) {
   const { toggleSidebar } = useSidebar();
 
   return (
     <Button
-      className={cn('size-7', className)}
+      className={className}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       size="icon"
@@ -334,7 +347,7 @@ export function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <MenuIcon />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
@@ -646,11 +659,31 @@ const sidebarMenuButtonVariants = cva(
  * Button component for sidebar menu items with support for tooltips and active states.
  * Automatically shows tooltips when the sidebar is collapsed.
  *
+ * @example
+ * ```tsx
+ * <SidebarMenuButton>
+ *   <HomeIcon />
+ *   <span>Home</span>
+ * </SidebarMenuButton>
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SidebarMenuButton
+ *   isActive={true}
+ *   tooltip="Dashboard"
+ *   size="lg"
+ * >
+ *   <DashboardIcon />
+ *   <span>Dashboard</span>
+ * </SidebarMenuButton>
+ * ```
+ *
  * @param asChild - Whether to render as a different element using Slot
- * @param isActive - Whether this menu item is currently active
+ * @param isActive - Whether this menu item is currently active/selected
  * @param variant - Visual variant: 'default' or 'outline'
  * @param size - Size variant: 'default', 'sm', or 'lg'
- * @param tooltip - Tooltip content to show when collapsed, or tooltip props
+ * @param tooltip - Tooltip content to show when collapsed, or tooltip props object
  * @param className - Additional CSS classes
  * @param props - Additional button props
  */
@@ -706,7 +739,18 @@ export function SidebarMenuButton({
 
 /**
  * Action button component for individual menu items.
- * Typically used for item-specific actions like delete or edit.
+ * Typically used for item-specific actions like delete, edit, or settings.
+ * Positioned absolutely within the menu item and shows on hover by default.
+ *
+ * @example
+ * ```tsx
+ * <SidebarMenuItem>
+ *   <SidebarMenuButton>Item Name</SidebarMenuButton>
+ *   <SidebarMenuAction onClick={handleEdit}>
+ *     <EditIcon />
+ *   </SidebarMenuAction>
+ * </SidebarMenuItem>
+ * ```
  *
  * @param className - Additional CSS classes
  * @param asChild - Whether to render as a different element using Slot
@@ -774,6 +818,17 @@ export function SidebarMenuBadge({
 /**
  * Skeleton loading component for sidebar menu items.
  * Shows a placeholder while menu content is loading.
+ * Generates random widths between 50-90% for realistic loading appearance.
+ *
+ * @example
+ * ```tsx
+ * <SidebarMenuSkeleton />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SidebarMenuSkeleton showIcon={true} />
+ * ```
  *
  * @param className - Additional CSS classes
  * @param showIcon - Whether to show an icon skeleton
@@ -860,6 +915,25 @@ export function SidebarMenuSubItem({
 /**
  * Button component for sub-menu items with support for active states.
  * Provides consistent styling for nested navigation links.
+ * Automatically hidden when sidebar is in icon-only mode.
+ *
+ * @example
+ * ```tsx
+ * <SidebarMenuSubButton href="/settings/profile">
+ *   Profile Settings
+ * </SidebarMenuSubButton>
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <SidebarMenuSubButton
+ *   href="/settings/advanced"
+ *   isActive={true}
+ *   size="sm"
+ * >
+ *   Advanced Options
+ * </SidebarMenuSubButton>
+ * ```
  *
  * @param asChild - Whether to render as a different element using Slot
  * @param size - Size variant: 'sm' or 'md'
