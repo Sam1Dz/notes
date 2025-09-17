@@ -1,6 +1,6 @@
 import '~/styles/globals.css';
 
-import { ThemeProvider } from '~/components/theme-provider';
+import { Provider } from '~/components/provider/base';
 import { fontRoboto, fontRobotoMono, fontRobotoSerif } from '~/configs/fonts';
 
 export { metadata } from '~/configs/site';
@@ -11,14 +11,17 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
       <body
         className={`${fontRoboto.variable} ${fontRobotoSerif.variable} ${fontRobotoMono.variable} antialiased`}
       >
-        <ThemeProvider
-          disableTransitionOnChange
-          enableSystem
-          attribute="class"
-          defaultTheme="system"
-        >
+        <Provider>
           {children}
-        </ThemeProvider>
+
+          {/*
+            <AppSidebar />
+            <SidebarInset>
+              <AppHeader />
+              <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+            </SidebarInset>
+          */}
+        </Provider>
       </body>
     </html>
   );

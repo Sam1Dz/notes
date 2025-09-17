@@ -19,5 +19,10 @@
     {
       "file": ".github/guidance/commit-message.md"
     }
-  ]
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "(?:container|input)\\s*:\\s*['\"]([^'\"]*)['\"]"
+    ]
+  ],
 }
