@@ -39,7 +39,11 @@ export function LayoutSidebar() {
             <SidebarMenu>
               {routes.map((item) => (
                 <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild isActive={pathname === item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    className="h-9"
+                    isActive={pathname === item.href}
+                  >
                     <Link href={item.href} onClick={handleMenuClick}>
                       <item.icon />
                       <span>{item.label}</span>

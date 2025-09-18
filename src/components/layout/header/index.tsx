@@ -1,10 +1,10 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { SidebarTrigger } from '~/components/ui/sidebar';
 
 import { HeaderLogo } from './logo';
 import { HeaderSearch } from './search';
+import { HeaderUser } from './user';
 
 export function LayoutHeader() {
   return (
@@ -20,13 +20,7 @@ export function LayoutHeader() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Avatar className="cursor-pointer">
-          <AvatarImage
-            alt="@shadcn"
-            src="https://avatars.githubusercontent.com/u/36542547?v=4"
-          />
-          <AvatarFallback>S</AvatarFallback>
-        </Avatar>
+        <HeaderUser />
       </div>
     </header>
   );

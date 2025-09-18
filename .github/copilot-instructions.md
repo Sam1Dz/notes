@@ -47,11 +47,13 @@ import { AppSidebar } from '~/components/app-sidebar';
   - `header/index.tsx`: Main header component
   - `header/logo.tsx`: Logo component
   - `header/search.tsx`: Search component
+  - `header/user.tsx`: User menu with theme switching and logout
   - `sidebar.tsx`: Sidebar navigation component
 - **Enhanced Components**: shadcn-studio variants with advanced features
   - `shadcn-studio/button.tsx`: Animated button with ripple effects using Framer
     Motion
   - `shadcn-studio/input.tsx`: Enhanced input with label and icon support
+  - `shadcn-studio/button-group.tsx`: Grouped buttons with seamless styling
 
 ### Component Composition Patterns
 
@@ -121,6 +123,44 @@ import { Input } from '~/components/ui/shadcn-studio/input';
     input: 'h-8',
   }}
 />
+```
+
+### User Interface Patterns
+
+Use dropdown menus and sheets for user interactions:
+
+```typescript
+// User menu with theme switching
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Avatar />
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>Color Scheme</DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        <DropdownMenuCheckboxItem checked={theme === 'light'}>
+          Light
+        </DropdownMenuCheckboxItem>
+        {/* ... other theme options */}
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+Group related buttons for cohesive UI:
+
+```typescript
+// Button group for theme selection
+<ButtonGroup className="w-full">
+  <Button variant={theme === 'light' ? 'default' : 'outline'}>
+    Light
+  </Button>
+  <Button variant={theme === 'dark' ? 'default' : 'outline'}>
+    Dark
+  </Button>
+</ButtonGroup>
 ```
 
 ### Route Groups
@@ -289,7 +329,7 @@ Theme provider wraps the entire app in `src/app/layout.tsx`:
   features
 - `src/components/provider/` - Provider components (base, theme, app)
 - `src/components/layout/` - Layout components (header, sidebar)
-- `src/components/layout/header/` - Header sub-components (logo, search)
+- `src/components/layout/header/` - Header sub-components (logo, search, user)
 - `src/configs/` - Configuration files (fonts, site metadata, env, routes)
 - `src/hooks/` - Custom React hooks
 - `src/libs/` - Utility libraries (MongoDB, utils)
@@ -329,6 +369,17 @@ Follow Conventional Commits specification:
 - Use React Hook Form for form handling with Zod validation
 - Leverage shadcn-studio components for enhanced UI features
 - Follow route groups pattern for organized page layouts
+- **Component Composition**: Break down complex components into smaller,
+  reusable parts
+- **Route Configuration**: Centralize navigation routes in
+  `src/configs/route.ts`
+- **Responsive Design**: Use responsive classes for mobile-first approach
+  (`md:hidden`, `md:flex`)
+- **Sidebar Integration**: Use `useSidebar()` hook for mobile sidebar management
+- **Animation Patterns**: Use Framer Motion for smooth component transitions and
+  effects
+- **User Interface Patterns**: Use dropdown menus for desktop and sheets for
+  mobile interactions
 - **Component Composition**: Break down complex components into smaller,
   reusable parts
 - **Route Configuration**: Centralize navigation routes in
