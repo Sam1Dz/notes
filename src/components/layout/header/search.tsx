@@ -1,4 +1,4 @@
-import { SearchIcon } from 'lucide-react';
+import { LuSearch } from 'react-icons/lu';
 
 import { Input } from '~/components/ui/shadcn-studio/input';
 import { cn } from '~/libs/utils';
@@ -15,7 +15,7 @@ export function HeaderSearch({ className }: HeaderSearchProps) {
         input: 'h-8',
       }}
       placeholder='Search notes (e.g., "meeting", "project")'
-      startIcon={SearchIcon}
+      startIcon={LuSearch}
       type="text"
     />
   );
