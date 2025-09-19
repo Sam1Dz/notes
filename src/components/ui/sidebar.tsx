@@ -2,8 +2,8 @@
 
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { MenuIcon } from 'lucide-react';
 import * as React from 'react';
+import { LuMenu } from 'react-icons/lu';
 
 import { Input } from '~/components/ui/input';
 import { Separator } from '~/components/ui/separator';
@@ -347,7 +347,7 @@ export function SidebarTrigger({
       }}
       {...props}
     >
-      <MenuIcon />
+      <LuMenu />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
