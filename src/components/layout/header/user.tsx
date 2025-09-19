@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  LogOutIcon,
-  MonitorIcon,
-  MoonIcon,
-  SunIcon,
-  SunMoonIcon,
-} from 'lucide-react';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
+import { LuLogOut, LuMonitor, LuMoon, LuSun, LuSunMoon } from 'react-icons/lu';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
@@ -85,7 +79,7 @@ function DesktopView() {
         <DropdownMenuGroup>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="h-9 cursor-pointer gap-2">
-              <SunMoonIcon size={16} />
+              <LuSunMoon size={16} />
               Color Scheme
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
@@ -118,7 +112,7 @@ function DesktopView() {
             className="text-error focus:bg-error dark:focus:bg-error-foreground focus:text-error-foreground dark:focus:text-error h-9 cursor-pointer"
             variant="default"
           >
-            <LogOutIcon className="dark:text-error focus:text-error-foreground" />
+            <LuLogOut className="dark:text-error focus:text-error-foreground" />
             Logout
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -158,27 +152,27 @@ function MobileView() {
                 variant={theme === 'light' ? 'default' : 'outline'}
                 onClick={() => setTheme('light')}
               >
-                <SunIcon />
+                <LuSun />
                 Light
               </Button>
               <Button
                 variant={theme === 'system' ? 'default' : 'outline'}
                 onClick={() => setTheme('system')}
               >
-                <MonitorIcon />
+                <LuMonitor />
                 System
               </Button>
               <Button
                 variant={theme === 'dark' ? 'default' : 'outline'}
                 onClick={() => setTheme('dark')}
               >
-                <MoonIcon />
+                <LuMoon />
                 Dark
               </Button>
             </ButtonGroup>
             <Button className="dark:bg-error-foreground bg-error text-error-foreground dark:text-error w-full">
-              <LogOutIcon />
-              Logoout
+              <LuLogOut />
+              Logout
             </Button>
           </div>
         </div>

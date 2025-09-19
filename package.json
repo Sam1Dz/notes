@@ -1,7 +1,7 @@
 {
   "name": "notes",
   "description": "",
-  "version": "2025.918.6",
+  "version": "2025.918.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Sam1Dz/notes.git"
@@ -37,7 +37,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jiti": "^2.5.1",
-    "lucide-react": "^0.544.0",
     "mongoose": "^8.18.1",
     "motion": "^12.23.15",
     "next": "^15.5.3",

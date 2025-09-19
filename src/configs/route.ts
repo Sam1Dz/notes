@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 
-import { ArchiveIcon, FileTextIcon, Trash2Icon } from 'lucide-react';
+import { LuArchive, LuFileText, LuTrash2 } from 'react-icons/lu';
 
 interface Route {
   label: string;
@@ -12,16 +12,16 @@ export const routes: Route[] = [
   {
     label: 'Notes',
     href: '/',
-    icon: FileTextIcon,
+    icon: LuFileText,
   },
   {
     label: 'Archived',
     href: '/archived',
-    icon: ArchiveIcon,
+    icon: LuArchive,
   },
   {
     label: 'Trash',
     href: '/trash',
-    icon: Trash2Icon,
+    icon: LuTrash2,
   },
 ];
