@@ -20,6 +20,7 @@ managing personal notes with archive and trash functionality.
 - **Environment**: T3 env for type-safe environment variables
   (`src/configs/env.ts`)
 - **Forms**: React Hook Form with Zod validation and @hookform/resolvers
+- **Icons**: react-icons for social SSO and UI elements
 
 ## Key Patterns & Conventions
 
@@ -36,8 +37,10 @@ import { AppSidebar } from '~/components/app-sidebar';
 
 - Server components by default, client components marked with `'use client'`
 - shadcn/ui components in `src/components/ui/` with "new-york" style
-- Custom components in `src/components/` (app-sidebar, app-header,
-  theme-provider)
+- **Auth Components**: Authentication system in `src/components/app/auth/`
+  - `form/login.tsx`: Login form with validation
+  - `logo.tsx`: Auth page logo component
+  - `social-sso.tsx`: Social login buttons (GitHub)
 - Utility function `cn()` from `src/libs/utils.ts` for className merging
 - **Provider Pattern**: Multi-layered providers in `src/components/provider/`
   - `base.tsx`: Main provider wrapper
@@ -52,7 +55,8 @@ import { AppSidebar } from '~/components/app-sidebar';
 - **Enhanced Components**: shadcn-studio variants with advanced features
   - `shadcn-studio/button.tsx`: Animated button with ripple effects using Framer
     Motion
-  - `shadcn-studio/input.tsx`: Enhanced input with label and icon support
+  - `shadcn-studio/input.tsx`: Enhanced input with label, icons, helper text,
+    and error states
   - `shadcn-studio/button-group.tsx`: Grouped buttons with seamless styling
 
 ### Component Composition Patterns
@@ -163,6 +167,56 @@ Group related buttons for cohesive UI:
 </ButtonGroup>
 ```
 
+### Authentication Patterns
+
+Use React Hook Form with Zod for authentication forms:
+
+```typescript
+// Auth schema with validation
+import { z } from 'zod';
+
+export const loginSchema = z.object({
+  email: z.email('Please enter a valid email address'),
+  password: z.string().min(1, 'Password is required'),
+  rememberMe: z.boolean().optional(),
+});
+
+export type LoginSchema = z.infer<typeof loginSchema>;
+
+// Form component with validation
+function AuthFormLogin() {
+  const methods = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  });
+
+  const onSubmit = async (data: LoginSchema) => {
+    // Handle authentication
+  };
+
+  return (
+    <Form {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormField name="email">
+          <FormItem>
+            <FormLabel isRequired>Email</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter your email" type="email" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        {/* ... other fields */}
+      </form>
+    </Form>
+  );
+}
+```
+
 ### Route Groups
 
 Use Next.js route groups for layout organization:
@@ -175,6 +229,10 @@ src/app/
 │   ├── page.tsx       # Home page
 │   ├── archived/      # Archived notes
 │   └── trash/         # Trash page
+├── auth/              # Route group for authentication pages
+│   ├── layout.tsx     # Auth layout with centered content
+│   ├── login/         # Login page
+│   └── register/      # Register page
 └── api/               # API routes
 ```
 
@@ -193,21 +251,77 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-const schema = z.object({
+// Basic form schema
+const noteSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   content: z.string().optional(),
 });
 
-type FormData = z.infer<typeof schema>;
+type NoteFormData = z.infer<typeof noteSchema>;
 
 function NoteForm() {
-  const form = useForm<FormData>({
-    resolver: zodResolver(schema),
+  const form = useForm<NoteFormData>({
+    resolver: zodResolver(noteSchema),
+    defaultValues: {
+      title: '',
+      content: '',
+    },
   });
 
-  // Form implementation
+  const onSubmit = async (data: NoteFormData) => {
+    // Handle form submission
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField name="title">
+          <FormItem>
+            <FormLabel isRequired>Title</FormLabel>
+            <FormControl>
+              <Input placeholder="Enter note title" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField name="content">
+          <FormItem>
+            <FormLabel>Content</FormLabel>
+            <FormControl>
+              <Textarea placeholder="Enter note content" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </form>
+    </Form>
+  );
 }
 ```
+
+For authentication forms, use enhanced validation and error handling:
+
+```typescript
+// Auth schema with comprehensive validation
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Password must contain at least one lowercase letter, one uppercase letter, and one number',
+    ),
+  rememberMe: z.boolean().optional(),
+});
+
+export type LoginSchema = z.infer<typeof loginSchema>;
+```
+
+````
 
 ### Styling Approach
 
@@ -249,7 +363,7 @@ routes.map((item) => (
     </Link>
   </SidebarMenuButton>
 ));
-```
+````
 
 ### Environment Variables
 
@@ -262,12 +376,12 @@ routes.map((item) => (
 ### Build Commands
 
 ```bash
-npm run dev      # Development with Turbopack
-npm run build    # Production build with Turbopack
-npm run start    # Start production server
-npm run lint     # Run ESLint
-npm run lint:fix # Auto-fix ESLint issues
-npm run format   # Format with Prettier
+bun run dev      # Development with Turbopack
+bun run build    # Production build with Turbopack
+bun run start    # Start production server
+bun run lint     # Run ESLint
+bun run lint:fix # Auto-fix ESLint issues
+bun run format   # Format with Prettier
 ```
 
 ### Adding UI Components
@@ -275,7 +389,7 @@ npm run format   # Format with Prettier
 Use shadcn CLI for consistent component installation:
 
 ```bash
-npx shadcn add [component-name]
+bunx shadcn add [component-name]
 ```
 
 Components install to `src/components/ui/` with proper TypeScript types and
@@ -321,9 +435,15 @@ Theme provider wraps the entire app in `src/app/layout.tsx`:
 
 ## File Organization Reference
 
+## File Organization Reference
+
 - `src/app/` - Next.js App Router pages and API routes
 - `src/app/(main)/` - Route group for main application pages
+- `src/app/auth/` - Route group for authentication pages (login, register)
 - `src/components/` - Reusable React components
+- `src/components/app/` - Application-specific components
+- `src/components/app/auth/` - Authentication components (login form, social
+  SSO)
 - `src/components/ui/` - shadcn/ui component library
 - `src/components/ui/shadcn-studio/` - Enhanced UI components with advanced
   features
@@ -333,6 +453,7 @@ Theme provider wraps the entire app in `src/app/layout.tsx`:
 - `src/configs/` - Configuration files (fonts, site metadata, env, routes)
 - `src/hooks/` - Custom React hooks
 - `src/libs/` - Utility libraries (MongoDB, utils)
+- `src/schemas/` - Zod validation schemas (auth, forms)
 - `src/styles/` - Global CSS and styling
 
 ## VS Code Configuration
@@ -380,12 +501,8 @@ Follow Conventional Commits specification:
   effects
 - **User Interface Patterns**: Use dropdown menus for desktop and sheets for
   mobile interactions
-- **Component Composition**: Break down complex components into smaller,
-  reusable parts
-- **Route Configuration**: Centralize navigation routes in
-  `src/configs/route.ts`
-- **Responsive Design**: Use responsive classes for mobile-first approach
-  (`md:hidden`, `md:flex`)
+- **Authentication Patterns**: Use React Hook Form with Zod for auth forms with
+  comprehensive validation
 - **Sidebar Integration**: Use `useSidebar()` hook for mobile sidebar management
 - **Animation Patterns**: Use Framer Motion for smooth component transitions and
   effects
