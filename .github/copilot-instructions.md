@@ -32,11 +32,32 @@ import { cn } from '~/libs/utils';
 import { Button } from '~/components/ui/button';
 ```
 
+#### Provider Architecture
+
+**Hierarchy**: `base.tsx` → `theme.tsx` → `app.tsx`
+
+- **Base provider**: Wraps theme provider with next-themes configuration
+- **Theme provider**: Enables system/light/dark themes with `next-themes`
+- **App provider**: Main layout with `SidebarProvider` from shadcn/ui
+
+```typescript
+// src/components/provider/base.tsx
+<ThemeProvider
+  disableTransitionOnChange
+  enableSystem
+  attribute="class"
+  defaultTheme="system"
+>
+  {children}
+</ThemeProvider>
+```
+
 #### Component Architecture
 
-- **Providers hierarchy**: `base.tsx` → `theme.tsx` → `app.tsx`
 - **UI components**: Use shadcn/ui pattern with `cva` for variants
-- **Layout pattern**: Sidebar navigation with `SidebarProvider` from shadcn/ui
+- **Layout pattern**: Sidebar navigation with `SidebarProvider` and
+  `SidebarInset`
+- **Forms**: React Hook Form with `@hookform/resolvers` and Zod schemas
 
 #### Database Connection
 
@@ -45,6 +66,8 @@ import { dbConnect } from '~/libs/mongodb';
 // Connection is cached globally - call anytime
 await dbConnect();
 ```
+
+Uses Mongoose with global caching to prevent multiple connections.
 
 #### Environment Variables
 
@@ -63,14 +86,15 @@ import { envServer } from '~/configs/env';
 bun dev          # Start dev server with Turbopack
 bun run build    # Production build with Turbopack
 bun run lint     # ESLint check
+bun run lint:fix # ESLint auto-fix
 bun run format   # Prettier formatting
 bun run outdated # Check for dependency updates
 ```
 
 ### Build Configuration
 
-- **Turbopack**: Enabled for both dev and build
-- **TypeScript**: Strict mode with path mapping
+- **Turbopack**: Enabled for both dev and build in `next.config.ts`
+- **TypeScript**: Strict mode with path mapping (`~/` → `./src/*`)
 - **ESLint**: Next.js + TypeScript + Prettier rules
 - **Tailwind**: v4 with CSS variables and custom fonts
 
@@ -78,20 +102,89 @@ bun run outdated # Check for dependency updates
 
 ### Styling
 
-- **Tailwind CSS v4**: Use CSS variables for theming
+- **Tailwind CSS v4**: Use CSS variables for theming in OKLCH color space
 - **Class merging**: Always use `cn()` utility for conditional classes
 - **Fonts**: Roboto variants loaded via Next.js font optimization
+- **Theme variables**: Defined in `globals.css` with light/dark variants
 
 ### Components
 
-- **shadcn/ui**: Follow established component patterns
+- **shadcn/ui**: Follow established component patterns with `cva` variants
 - **Icons**: Lucide React icons throughout
 - **Theming**: System/light/dark themes with `next-themes`
+- **Sidebar**: Mobile-responsive with `useSidebar` hook
 
 ### Forms
 
 - **React Hook Form**: With `@hookform/resolvers` and Zod
-- **Validation**: Zod schemas for type-safe form validation
+- **Validation**: Zod schemas in `src/schemas/` with type inference
+- **UI integration**: shadcn/ui form components with proper error handling
+
+```typescript
+// Example form pattern
+const methods = useForm<Schema>({
+  resolver: zodResolver(schema),
+  defaultValues: { /* ... */ },
+});
+
+<Form {...methods}>
+  <form onSubmit={methods.handleSubmit(onSubmit)}>
+    <FormField
+      control={methods.control}
+      name="field"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Label</FormLabel>
+          <FormControl>
+            <Input {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  </form>
+</Form>
+```
+
+## Database & API
+
+### MongoDB
+
+- Mongoose with connection caching in `src/libs/mongodb.ts`
+- Environment-based URI configuration with validation
+- Health check endpoint at `/api/database/status`
+
+### API Routes
+
+- Next.js API routes in `src/app/api/`
+- Standard NextResponse patterns
+- Error handling with proper status codes
+
+## Navigation & Routing
+
+### App Router Structure
+
+- Route groups: `(main)` for shared layout
+- Dynamic routes for notes management
+- Static routes: `/`, `/archived`, `/trash`
+
+### Sidebar Navigation
+
+- Routes defined in `~/configs/route.ts` with icon components
+- Active state management with `usePathname`
+- Mobile-responsive with `useSidebar` hook
+
+```typescript
+// src/configs/route.ts
+export const routes: Route[] = [
+  {
+    label: 'Notes',
+    href: '/',
+    icon: LuFileText,
+  },
+  // ...
+];
+```
 
 ## Code Quality Standards
 
@@ -114,33 +207,22 @@ bun run outdated # Check for dependency updates
 - Utilities in `libs/`
 - Custom hooks in `hooks/`
 
-## Database & API
+## Integration Points
 
-### MongoDB
+### External Dependencies
 
-- Mongoose with connection caching
-- Environment-based URI configuration
-- Health check endpoint at `/api/database/status`
+- **Database**: MongoDB via Mongoose
+- **UI**: Radix UI primitives via shadcn/ui
+- **Styling**: Tailwind CSS v4 with custom theme system
+- **Forms**: React Hook Form + Zod validation
+- **Fonts**: Google Fonts (Roboto variants)
+- **Icons**: Lucide React
 
-### API Routes
+### Authentication
 
-- Next.js API routes in `src/app/api/`
-- Standard NextResponse patterns
-- Error handling with proper status codes
-
-## Navigation & Routing
-
-### App Router Structure
-
-- Route groups: `(main)` for shared layout
-- Dynamic routes for notes management
-- Static routes: `/`, `/archived`, `/trash`
-
-### Sidebar Navigation
-
-- Routes defined in `~/configs/route.ts`
-- Active state management with `usePathname`
-- Mobile-responsive with `useSidebar` hook
+- Auth routes in `src/app/auth/` with separate layout
+- Form components in `src/components/app/auth/`
+- Schema validation in `src/schemas/auth.ts`
 
 ## Deployment & Environment
 
@@ -186,8 +268,9 @@ bun run outdated # Check for dependency updates
 - **`src/app/layout.tsx`**: Root layout with providers
 - **`src/components/provider/app.tsx`**: Main app structure
 - **`src/configs/route.ts`**: Navigation configuration
-- **`src/libs/utils.ts`**: Utility functions
-- **`src/components/ui/button.tsx`**: Component pattern example
+- **`src/libs/utils.ts`**: Utility functions (`cn()` for class merging)
+- **`src/components/ui/button.tsx`**: Component pattern example with `cva`
+- **`src/styles/globals.css`**: Theme variables and Tailwind config
 - **`package.json`**: Scripts and dependencies
 - **`components.json`**: shadcn/ui configuration</content>
   <parameter name="filePath">d:\Projects\Applications\Portfolio\notes\.github\copilot-instructions.md
