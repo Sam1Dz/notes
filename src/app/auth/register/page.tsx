@@ -1,13 +1,13 @@
 import Link from 'next/link';
 
-import { AuthFormLogin } from '~/components/app/auth/form/login';
+import { AuthFormRegister } from '~/components/app/auth/form/register';
 import { AuthLogo } from '~/components/app/auth/logo';
 import { AuthSocialSso } from '~/components/app/auth/social-sso';
 import { Card, CardContent, CardHeader } from '~/components/ui/card';
 import { Separator } from '~/components/ui/separator';
 
 export const metadata = {
-  title: 'Login',
+  title: 'Register',
 };
 
 export default function Page() {
@@ -18,11 +18,11 @@ export default function Page() {
       <Card>
         <CardHeader>
           <h1 className="text-foreground text-center text-2xl font-bold">
-            Sign in to your account
+            Register for an account
           </h1>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
-          <AuthFormLogin />
+          <AuthFormRegister />
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -30,23 +30,22 @@ export default function Page() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card text-muted-foreground px-2">
-                Or continue with
+                Or register with
               </span>
             </div>
           </div>
-
           <AuthSocialSso />
         </CardContent>
       </Card>
 
       <div className="text-center">
         <p className="text-muted-foreground text-sm">
-          Don&#39;t have an account?&nbsp;
+          Already have an account?&nbsp;
           <Link
             className="text-primary hover:text-primary/80 font-medium transition-colors"
-            href="/auth/register"
+            href="/auth/login"
           >
-            Register
+            Login
           </Link>
         </p>
       </div>
