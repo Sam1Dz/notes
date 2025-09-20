@@ -124,23 +124,30 @@ export function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
  * Must be used within a FormField component.
  *
  * @param className - Additional CSS classes
+ * @param isRequired - Whether the field is required, displays an asterisk if true
  * @param props - Additional label props
  * @returns JSX label element with error styling and accessibility attributes
  */
 export function FormLabel({
   className,
+  isRequired,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: React.ComponentProps<typeof LabelPrimitive.Root> & {
+  isRequired?: boolean;
+}) {
   const { error, formItemId } = useFormField();
 
   return (
     <Label
-      className={cn('data-[error=true]:text-destructive', className)}
+      className={cn('data-[error=true]:text-error gap-1', className)}
       data-error={!!error}
       data-slot="form-label"
       htmlFor={formItemId}
       {...props}
-    />
+    >
+      {props.children}
+      {isRequired && <span className="text-error">*</span>}
+    </Label>
   );
 }
 
@@ -216,7 +223,7 @@ export function FormMessage({
 
   return (
     <p
-      className={cn('text-destructive text-sm', className)}
+      className={cn('text-error text-sm', className)}
       data-slot="form-message"
       id={formMessageId}
       {...props}
