@@ -5,7 +5,7 @@ import type { VariantProps } from 'class-variance-authority';
 import { motion, type HTMLMotionProps, type Transition } from 'motion/react';
 import * as React from 'react';
 
-import { buttonVariants } from '~/components/ui/button';
+import { buttonVariants } from '~/frontend/components/ui/button';
 import { cn } from '~/utils/core/class-merger';
 
 /**

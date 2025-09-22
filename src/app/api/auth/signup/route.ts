@@ -1,13 +1,14 @@
 import type mongoose from 'mongoose';
 
-import bcrypt from 'bcryptjs';
-import { NextResponse } from 'next/server';
-
-import User from '~/databases/user';
+import { createUser, findUserByEmail } from '~/backend/services/user.service';
 import { dbConnect } from '~/libs/mongodb';
 import { registerSchema } from '~/schemas/auth';
-import type { RegisterResponse } from '~/types/auth';
-import type { ApiErrorType, ApiSuccessType } from '~/types/core/response';
+import {
+  apiError,
+  apiSuccess,
+  internalServerError,
+  validationError,
+} from '~/utils/core/api-response';
 
 export async function POST(request: Request) {
   try {
@@ -17,83 +18,40 @@ export async function POST(request: Request) {
     const validationResult = registerSchema.safeParse(body);
 
     if (!validationResult.success) {
-      const errorResponse: ApiErrorType = {
-        type: 'client_error',
-        code: 'BAD_REQUEST',
-        errors: validationResult.error.issues.map((issue) => ({
-          detail: issue.message,
-          attr: issue.path.join('.'),
-        })),
-        timestamp: new Date().toISOString(),
-      };
-
-      return NextResponse.json(errorResponse, { status: 400 });
+      return validationError(validationResult.error.issues);
     }
-
-    const { name, email, password } = validationResult.data;
 
     // Connect to database
     await dbConnect();
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await findUserByEmail(validationResult.data.email);
 
     if (existingUser) {
-      const errorResponse: ApiErrorType = {
-        type: 'client_error',
-        code: 'CONFLICT',
-        errors: [
-          {
-            detail: 'User already exists with this email',
-            attr: 'email',
-          },
-        ],
-        timestamp: new Date().toISOString(),
-      };
-
-      return NextResponse.json(errorResponse, { status: 409 });
+      return apiError('CONFLICT', 409, [
+        {
+          detail: 'User already exists with this email',
+          attr: 'email',
+        },
+      ]);
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
     // Create user in database
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
+    const user = await createUser(validationResult.data);
 
-    // Return success response
-    const successResponse: ApiSuccessType<RegisterResponse> = {
-      code: 'CREATED',
-      detail: 'User registered successfully',
-      data: {
+    return apiSuccess(
+      'CREATED',
+      201,
+      {
         id: (user._id as mongoose.Types.ObjectId).toString(),
         name: user.name,
         email: user.email,
         createdAt: user.createdAt.toISOString(),
         updatedAt: user.updatedAt.toISOString(),
       },
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json(successResponse, { status: 201 });
+      'User registered successfully',
+    );
   } catch (error) {
-    console.error('Signup error:', error);
-
-    const errorResponse: ApiErrorType = {
-      type: 'server_error',
-      code: 'INTERNAL_SERVER_ERROR',
-      errors: [
-        {
-          detail: error instanceof Error ? error.message : 'Unknown error',
-          attr: null,
-        },
-      ],
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json(errorResponse, { status: 500 });
+    return internalServerError(error);
   }
 }

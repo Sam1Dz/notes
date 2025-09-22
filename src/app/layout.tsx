@@ -1,7 +1,7 @@
-import '~/styles/globals.css';
+import '~/frontend/styles/globals.css';
 
-import { Provider } from '~/components/provider/base';
 import { fontRoboto, fontRobotoMono, fontRobotoSerif } from '~/configs/fonts';
+import { Provider } from '~/frontend/components/provider/base';
 
 export { metadata } from '~/configs/site';
 

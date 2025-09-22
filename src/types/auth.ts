@@ -1,9 +1,18 @@
 import type { EntityType } from './core/entity';
 
-import type { RegisterSchema } from '~/schemas/auth';
+import type { LoginSchema, RegisterSchema } from '~/schemas/auth';
 
-export type RegisterResponse = Omit<
-  RegisterSchema,
-  'password' | 'confirmPassword'
-> &
-  EntityType;
+export interface LoginResponse {
+  user: EntityType &
+    Omit<LoginSchema, 'password'> & {
+      name: string;
+      email: string;
+    };
+  token: {
+    access: string;
+    refresh: string;
+  };
+}
+
+export type RegisterResponse = EntityType &
+  Omit<RegisterSchema, 'password' | 'confirmPassword'>;

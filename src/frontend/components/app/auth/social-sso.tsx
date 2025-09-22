@@ -2,7 +2,7 @@
 
 import { SiGithub } from 'react-icons/si';
 
-import { Button } from '~/components/ui/shadcn-studio/button';
+import { Button } from '~/frontend/components/ui/shadcn-studio/button';
 
 export function AuthSocialSso() {
   const handleSocialLogin = (_provider: 'google' | 'github') => {

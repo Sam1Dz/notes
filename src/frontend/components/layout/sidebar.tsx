@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { routes } from '~/configs/route';
 import {
   Sidebar,
   SidebarContent,
@@ -13,8 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '~/components/ui/sidebar';
-import { routes } from '~/configs/route';
+} from '~/frontend/components/ui/sidebar';
 
 import { HeaderLogo } from './header/logo';
 

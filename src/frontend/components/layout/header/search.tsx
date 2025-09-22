@@ -1,6 +1,6 @@
 import { LuSearch } from 'react-icons/lu';
 
-import { Input } from '~/components/ui/shadcn-studio/input';
+import { Input } from '~/frontend/components/ui/shadcn-studio/input';
 import { cn } from '~/utils/core/class-merger';
 
 interface HeaderSearchProps {

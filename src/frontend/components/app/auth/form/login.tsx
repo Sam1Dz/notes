@@ -5,7 +5,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Checkbox } from '~/components/ui/checkbox';
+import { Checkbox } from '~/frontend/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -13,10 +13,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { Label } from '~/components/ui/label';
-import { Button } from '~/components/ui/shadcn-studio/button';
-import { Input } from '~/components/ui/shadcn-studio/input';
+} from '~/frontend/components/ui/form';
+import { Label } from '~/frontend/components/ui/label';
+import { Button } from '~/frontend/components/ui/shadcn-studio/button';
+import { Input } from '~/frontend/components/ui/shadcn-studio/input';
 import { loginSchema, type LoginSchema } from '~/schemas/auth';
 
 export function AuthFormLogin() {

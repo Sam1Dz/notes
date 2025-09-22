@@ -4,7 +4,11 @@ import { useTheme } from 'next-themes';
 import * as React from 'react';
 import { LuLogOut, LuMonitor, LuMoon, LuSun, LuSunMoon } from 'react-icons/lu';
 
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '~/frontend/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -18,17 +22,17 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Separator } from '~/components/ui/separator';
-import { Button } from '~/components/ui/shadcn-studio/button';
-import { ButtonGroup } from '~/components/ui/shadcn-studio/button-group';
+} from '~/frontend/components/ui/dropdown-menu';
+import { Separator } from '~/frontend/components/ui/separator';
+import { Button } from '~/frontend/components/ui/shadcn-studio/button';
+import { ButtonGroup } from '~/frontend/components/ui/shadcn-studio/button-group';
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from '~/components/ui/sheet';
-import { useIsMobile } from '~/hooks/use-mobile';
+} from '~/frontend/components/ui/sheet';
+import { useIsMobile } from '~/frontend/hooks/use-mobile';
 
 export function HeaderUser() {
   const isMobile = useIsMobile();

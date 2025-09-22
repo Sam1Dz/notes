@@ -5,24 +5,24 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { LuMenu } from 'react-icons/lu';
 
-import { Input } from '~/components/ui/input';
-import { Separator } from '~/components/ui/separator';
-import { Button } from '~/components/ui/shadcn-studio/button';
+import { Separator } from '~/frontend/components/ui/separator';
+import { Button } from '~/frontend/components/ui/shadcn-studio/button';
+import { Input } from '~/frontend/components/ui/shadcn-studio/input';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '~/components/ui/sheet';
-import { Skeleton } from '~/components/ui/skeleton';
+} from '~/frontend/components/ui/sheet';
+import { Skeleton } from '~/frontend/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '~/components/ui/tooltip';
-import { useIsMobile } from '~/hooks/use-mobile';
+} from '~/frontend/components/ui/tooltip';
+import { useIsMobile } from '~/frontend/hooks/use-mobile';
 import { cn } from '~/utils/core/class-merger';
 
 /**

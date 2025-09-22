@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { Input as ShadcnInput } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
+import { Input as ShadcnInput } from '~/frontend/components/ui/input';
+import { Label } from '~/frontend/components/ui/label';
 import { cn } from '~/utils/core/class-merger';
 
 /**

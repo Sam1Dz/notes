@@ -12,9 +12,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { Button } from '~/components/ui/shadcn-studio/button';
-import { Input } from '~/components/ui/shadcn-studio/input';
+} from '~/frontend/components/ui/form';
+import { Button } from '~/frontend/components/ui/shadcn-studio/button';
+import { Input } from '~/frontend/components/ui/shadcn-studio/input';
 import { registerSchema, type RegisterSchema } from '~/schemas/auth';
 
 export function AuthFormRegister() {

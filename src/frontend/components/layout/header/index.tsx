@@ -1,6 +1,6 @@
 'use client';
 
-import { SidebarTrigger } from '~/components/ui/sidebar';
+import { SidebarTrigger } from '~/frontend/components/ui/sidebar';
 
 import { HeaderLogo } from './logo';
 import { HeaderSearch } from './search';
