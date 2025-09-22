@@ -1,7 +1,7 @@
 {
   "name": "notes",
   "description": "",
-  "version": "2025.920.18",
+  "version": "2025.922.21",
   "repository": {
     "type": "git",
     "url": "https://github.com/Sam1Dz/notes.git"
@@ -48,7 +48,7 @@
     "react-hook-form": "^7.63.0",
     "react-icons": "^5.5.0",
     "tailwind-merge": "^3.3.1",
-    "zod": "^4.1.9"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
