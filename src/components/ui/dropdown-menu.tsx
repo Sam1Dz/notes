@@ -4,7 +4,7 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import * as React from 'react';
 import { LuChevronRight, LuCircle, LuMenu } from 'react-icons/lu';
 
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Root component for dropdown menu functionality.

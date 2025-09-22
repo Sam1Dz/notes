@@ -1,4 +1,4 @@
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Skeleton component for displaying loading placeholders.

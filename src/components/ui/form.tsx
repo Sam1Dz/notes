@@ -15,7 +15,7 @@ import {
 } from 'react-hook-form';
 
 import { Label } from '~/components/ui/label';
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Form provider component from react-hook-form.

@@ -3,7 +3,7 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import * as React from 'react';
 
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Root avatar component that provides the container and context for avatar images and fallbacks.

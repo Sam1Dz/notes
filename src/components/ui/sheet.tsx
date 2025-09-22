@@ -3,7 +3,7 @@
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { LuMenu } from 'react-icons/lu';
 
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Root component for the Sheet dialog system.

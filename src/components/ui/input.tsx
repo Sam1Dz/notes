@@ -1,4 +1,4 @@
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Input component with custom styling and accessibility features.

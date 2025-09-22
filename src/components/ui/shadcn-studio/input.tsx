@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Input as ShadcnInput } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Props for the enhanced Input component with label and icon support.

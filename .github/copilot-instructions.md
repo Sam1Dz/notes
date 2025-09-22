@@ -83,7 +83,7 @@ import { envServer } from '~/configs/env';
 ### Commands
 
 ```bash
-bun dev          # Start dev server with Turbopack
+bun run dev          # Start dev server with Turbopack
 bun run build    # Production build with Turbopack
 bun run lint     # ESLint check
 bun run lint:fix # ESLint auto-fix

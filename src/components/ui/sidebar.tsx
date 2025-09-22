@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui/tooltip';
 import { useIsMobile } from '~/hooks/use-mobile';
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Cookie name for storing sidebar state.

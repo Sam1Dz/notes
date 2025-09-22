@@ -2,7 +2,7 @@
 
 import { LuNotepadText } from 'react-icons/lu';
 
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 interface HeaderLogoProps {
   className?: string;

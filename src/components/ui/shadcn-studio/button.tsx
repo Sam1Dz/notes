@@ -6,7 +6,7 @@ import { motion, type HTMLMotionProps, type Transition } from 'motion/react';
 import * as React from 'react';
 
 import { buttonVariants } from '~/components/ui/button';
-import { cn } from '~/libs/utils';
+import { cn } from '~/utils/core/class-merger';
 
 /**
  * Represents a single ripple effect instance with positioning data.
