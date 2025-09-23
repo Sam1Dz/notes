@@ -1,10 +1,8 @@
-/**
- * MongoDB connection utilities using Mongoose with connection caching.
- */
-
 import mongoose from 'mongoose';
 
-import { envServer } from '../configs/env';
+import type { MongoEntityId } from '~/types/core/entity';
+
+import { envServer } from '../../configs/env';
 
 const MONGODB_URI = envServer.MONGODB_URI;
 
@@ -34,9 +32,8 @@ if (!global.mongoose) {
 
 /**
  * Connects to MongoDB using Mongoose with caching to reuse connections.
- * @returns A promise that resolves to the Mongoose instance.
  */
-export async function dbConnect() {
+async function dbConnect() {
   if (cached.conn) {
     return cached.conn;
   }
@@ -59,4 +56,28 @@ export async function dbConnect() {
   }
 
   return cached.conn;
+}
+
+/**
+ * Higher-order function that ensures database connection before executing a handler.
+ * This utility wraps database operations to guarantee connectivity.
+ *
+ * @typeParam T - The return type of the handler function.
+ * @param handler - The async function to execute after ensuring database connection.
+ * @returns A Promise that resolves to the result of the handler function.
+ */
+export async function withDatabase<T>(handler: () => Promise<T>): Promise<T> {
+  await dbConnect();
+
+  return handler();
+}
+
+/**
+ * Converts a MongoDB ObjectId to its string representation.
+ *
+ * @param id - The MongoDB ObjectId to convert.
+ * @returns The string representation of the ObjectId.
+ */
+export function stringifyObjectId(id: MongoEntityId): string {
+  return id.toString();
 }

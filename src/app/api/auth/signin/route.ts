@@ -1,100 +1,76 @@
-import type mongoose from 'mongoose';
-
-import jwt from 'jsonwebtoken';
-
 import {
   findUserByEmail,
   verifyPassword,
 } from '~/backend/services/user.service';
-import { envServer } from '~/configs/env';
-import { dbConnect } from '~/libs/mongodb';
 import { loginSchema } from '~/schemas/auth';
+import type { MongoEntityId } from '~/types/core/entity';
 import {
   apiError,
   apiSuccess,
   internalServerError,
-  validationError,
 } from '~/utils/core/api-response';
+import { generateAccessToken, generateRefreshToken } from '~/utils/core/jwt';
+import { stringifyObjectId, withDatabase } from '~/utils/core/mongodb';
+import { withValidation } from '~/utils/shared/validation';
 
 export async function POST(request: Request) {
   try {
-    // Parse and validate request body
-    const body = await request.json();
+    const { email, password } = await withValidation(request, loginSchema);
 
-    const validationResult = loginSchema.safeParse(body);
+    return withDatabase(async () => {
+      // Find user by email
+      const user = await findUserByEmail(email);
 
-    if (!validationResult.success) {
-      return validationError(validationResult.error.issues);
-    }
+      if (!user) {
+        return apiError('UNAUTHORIZED', 401, [
+          {
+            detail: 'Invalid email or password',
+            attr: 'email',
+          },
+        ]);
+      }
 
-    const { email, password } = validationResult.data;
+      // Verify password
+      const isPasswordValid = await verifyPassword(password, user.password);
 
-    // Connect to database
-    await dbConnect();
+      if (!isPasswordValid) {
+        return apiError('UNAUTHORIZED', 401, [
+          {
+            detail: 'Invalid email or password',
+            attr: 'password',
+          },
+        ]);
+      }
 
-    // Find user by email
-    const user = await findUserByEmail(email);
-
-    if (!user) {
-      return apiError('UNAUTHORIZED', 401, [
-        {
-          detail: 'Invalid email or password',
-          attr: 'email',
-        },
-      ]);
-    }
-
-    // Verify password
-    const isPasswordValid = await verifyPassword(password, user.password);
-
-    if (!isPasswordValid) {
-      return apiError('UNAUTHORIZED', 401, [
-        {
-          detail: 'Invalid email or password',
-          attr: 'password',
-        },
-      ]);
-    }
-
-    // Generate JWT tokens
-    const accessToken = jwt.sign(
-      {
-        userId: (user._id as mongoose.Types.ObjectId).toString(),
+      // Generate JWT tokens
+      const accessToken = generateAccessToken({
+        userId: stringifyObjectId(user._id as MongoEntityId),
         email: user.email,
-        type: 'access',
-      },
-      envServer.JWT_ACCESS_SECRET,
-      { expiresIn: '15m' }, // 15 minutes
-    );
-
-    const refreshToken = jwt.sign(
-      {
-        userId: (user._id as mongoose.Types.ObjectId).toString(),
+      });
+      const refreshToken = generateRefreshToken({
+        userId: stringifyObjectId(user._id as MongoEntityId),
         email: user.email,
-        type: 'refresh',
-      },
-      envServer.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }, // 7 days
-    );
+      });
 
-    return apiSuccess(
-      'OK',
-      200,
-      {
-        user: {
-          id: (user._id as mongoose.Types.ObjectId).toString(),
-          name: user.name,
-          email: user.email,
-          createdAt: user.createdAt.toISOString(),
-          updatedAt: user.updatedAt.toISOString(),
+      return apiSuccess(
+        'OK',
+        200,
+        {
+          user: {
+            id: stringifyObjectId(user._id as MongoEntityId),
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt.toISOString(),
+            updatedAt: user.updatedAt.toISOString(),
+          },
+          token: {
+            access: accessToken,
+            refresh: refreshToken,
+          },
         },
-        token: {
-          access: accessToken,
-          refresh: refreshToken,
-        },
-      },
-      'Login successful',
-    );
+        'Login successful',
+      );
+    });
   } catch (error) {
     return internalServerError(error);
   }
