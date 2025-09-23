@@ -88,12 +88,12 @@ bun run build    # Production build with Turbopack
 bun run lint     # ESLint check
 bun run lint:fix # ESLint auto-fix
 bun run format   # Prettier formatting
-bun run outdated # Check for dependency updates
+bun run outdated # Check for dependency updates (uses npm-check-updates)
 ```
 
 ### Build Configuration
 
-- **Turbopack**: Enabled for both dev and build in `next.config.ts`
+- **Turbopack**: Enabled via package.json scripts for both dev and build
 - **TypeScript**: Strict mode with path mapping (`~/` → `./src/*`)
 - **ESLint**: Next.js + TypeScript + Prettier rules
 - **Tailwind**: v4 with CSS variables and custom fonts
@@ -331,5 +331,6 @@ export const routes: Route[] = [
   `cva`
 - **`src/frontend/styles/globals.css`**: Theme variables and Tailwind config
 - **`package.json`**: Scripts and dependencies
-- **`components.json`**: shadcn/ui configuration</content>
+- **`components.json`**: shadcn/ui configuration (note: css path should be
+  `src/frontend/styles/globals.css`)</content>
   <parameter name="filePath">d:\Projects\Applications\Portfolio\notes\.github\copilot-instructions.md
