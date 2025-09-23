@@ -18,5 +18,11 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
+export const refreshTokenSchema = z.object({
+  accessToken: z.string().min(1, 'Access token is required'),
+  refreshToken: z.string().min(1, 'Refresh token is required'),
+});
+
 export type LoginSchema = z.infer<typeof loginSchema>;
 export type RegisterSchema = z.infer<typeof registerSchema>;
+export type RefreshTokenSchema = z.infer<typeof refreshTokenSchema>;

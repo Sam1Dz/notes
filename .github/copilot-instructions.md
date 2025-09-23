@@ -28,8 +28,8 @@ with archive and trash features.
 Use `~/` prefix for all imports from `src/`:
 
 ```typescript
-import { cn } from '~/libs/utils';
-import { Button } from '~/components/ui/button';
+import { cn } from '~/utils/core/class-merger';
+import { Button } from '~/frontend/components/ui/button';
 ```
 
 #### Provider Architecture
@@ -41,7 +41,7 @@ import { Button } from '~/components/ui/button';
 - **App provider**: Main layout with `SidebarProvider` from shadcn/ui
 
 ```typescript
-// src/components/provider/base.tsx
+// src/frontend/components/provider/base.tsx
 <ThemeProvider
   disableTransitionOnChange
   enableSystem
@@ -62,7 +62,7 @@ import { Button } from '~/components/ui/button';
 #### Database Connection
 
 ```typescript
-import { dbConnect } from '~/libs/mongodb';
+import { dbConnect } from '~/utils/core/mongodb';
 // Connection is cached globally - call anytime
 await dbConnect();
 ```
@@ -83,17 +83,17 @@ import { envServer } from '~/configs/env';
 ### Commands
 
 ```bash
-bun dev          # Start dev server with Turbopack
+bun run dev          # Start dev server with Turbopack
 bun run build    # Production build with Turbopack
 bun run lint     # ESLint check
 bun run lint:fix # ESLint auto-fix
 bun run format   # Prettier formatting
-bun run outdated # Check for dependency updates
+bun run outdated # Check for dependency updates (uses npm-check-updates)
 ```
 
 ### Build Configuration
 
-- **Turbopack**: Enabled for both dev and build in `next.config.ts`
+- **Turbopack**: Enabled via package.json scripts for both dev and build
 - **TypeScript**: Strict mode with path mapping (`~/` → `./src/*`)
 - **ESLint**: Next.js + TypeScript + Prettier rules
 - **Tailwind**: v4 with CSS variables and custom fonts
@@ -150,7 +150,7 @@ const methods = useForm<Schema>({
 
 ### MongoDB
 
-- Mongoose with connection caching in `src/libs/mongodb.ts`
+- Mongoose with connection caching in `src/utils/core/mongodb.ts`
 - Environment-based URI configuration with validation
 - Health check endpoint at `/api/database/status`
 
@@ -159,6 +159,54 @@ const methods = useForm<Schema>({
 - Next.js API routes in `src/app/api/`
 - Standard NextResponse patterns
 - Error handling with proper status codes
+
+### API Patterns
+
+**Validation**: Use `withValidation` utility for request parsing:
+
+```typescript
+import { withValidation } from '~/utils/shared/validation';
+
+export async function POST(request: Request) {
+  const data = await withValidation(request, schema);
+  // data is now validated and typed
+}
+```
+
+**Database**: Use `withDatabase` wrapper for connection management:
+
+```typescript
+import { withDatabase } from '~/utils/core/mongodb';
+
+return withDatabase(async () => {
+  // Database operations here
+});
+```
+
+**Responses**: Standardized success/error responses:
+
+```typescript
+import { apiSuccess, apiError } from '~/utils/core/api-response';
+
+return apiSuccess('SUCCESS', 200, data, 'Operation completed');
+return apiError('VALIDATION_ERROR', 400, [
+  { detail: 'Invalid input', attr: 'field' },
+]);
+```
+
+## Authentication
+
+### JWT Implementation
+
+- Access/refresh token pattern with `jsonwebtoken`
+- Password hashing with `bcryptjs` (12 rounds)
+- Token generation utilities in `src/utils/core/jwt.ts`
+
+### User Management
+
+- User model with Mongoose timestamps
+- Service layer in `src/backend/services/user.service.ts`
+- Email uniqueness constraints
 
 ## Navigation & Routing
 
@@ -221,7 +269,7 @@ export const routes: Route[] = [
 ### Authentication
 
 - Auth routes in `src/app/auth/` with separate layout
-- Form components in `src/components/app/auth/`
+- Form components in `src/frontend/components/app/auth/`
 - Schema validation in `src/schemas/auth.ts`
 
 ## Deployment & Environment
@@ -235,6 +283,8 @@ export const routes: Route[] = [
 ### Environment Setup
 
 - `MONGODB_URI`: Required for database connection
+- `JWT_ACCESS_SECRET`: >=32 characters for access tokens
+- `JWT_REFRESH_SECRET`: >=32 characters for refresh tokens
 - Validated at startup with helpful error messages
 
 ## Common Tasks
@@ -248,14 +298,21 @@ export const routes: Route[] = [
 ### Adding UI Components
 
 1. Use shadcn/ui CLI: `bunx shadcn@latest add [component]`
-2. Follow existing patterns in `src/components/ui/`
+2. Follow existing patterns in `src/frontend/components/ui/`
 3. Use `cn()` for class merging
 
 ### Database Operations
 
-1. Import `dbConnect` from `~/libs/mongodb`
+1. Import `dbConnect` from `~/utils/core/mongodb`
 2. Call `await dbConnect()` before operations
 3. Use Mongoose models (when implemented)
+
+### API Development
+
+1. Create route in `src/app/api/[endpoint]/route.ts`
+2. Use `withValidation` for request parsing
+3. Wrap operations with `withDatabase`
+4. Return standardized responses with `apiSuccess`/`apiError`
 
 ### Theming
 
@@ -266,11 +323,14 @@ export const routes: Route[] = [
 ## Key Files to Reference
 
 - **`src/app/layout.tsx`**: Root layout with providers
-- **`src/components/provider/app.tsx`**: Main app structure
+- **`src/frontend/components/provider/app.tsx`**: Main app structure
 - **`src/configs/route.ts`**: Navigation configuration
-- **`src/libs/utils.ts`**: Utility functions (`cn()` for class merging)
-- **`src/components/ui/button.tsx`**: Component pattern example with `cva`
-- **`src/styles/globals.css`**: Theme variables and Tailwind config
+- **`src/utils/core/class-merger.ts`**: Utility functions (`cn()` for class
+  merging)
+- **`src/frontend/components/ui/button.tsx`**: Component pattern example with
+  `cva`
+- **`src/frontend/styles/globals.css`**: Theme variables and Tailwind config
 - **`package.json`**: Scripts and dependencies
-- **`components.json`**: shadcn/ui configuration</content>
+- **`components.json`**: shadcn/ui configuration (note: css path should be
+  `src/frontend/styles/globals.css`)</content>
   <parameter name="filePath">d:\Projects\Applications\Portfolio\notes\.github\copilot-instructions.md
