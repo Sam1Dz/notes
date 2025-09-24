@@ -3,27 +3,50 @@
 ## Project Overview
 
 This is a Next.js 15 notes application using the App Router with TypeScript,
-MongoDB, and modern React patterns. The app provides note-taking functionality
-with archive and trash features.
+MongoDB, and modern React patterns. Currently implements user authentication
+with JWT tokens. Notes functionality is planned but not yet implemented.
 
 ## Architecture & File Structure
 
 ### Core Structure
 
 - **`src/app/`**: Next.js App Router pages and layouts
-  - `(main)/`: Main app routes with shared layout
-  - `api/database/status/`: Health check endpoint
-- **`src/components/`**: React components organized by feature
+  - `(main)/`: Main app routes with shared sidebar layout
+  - `api/auth/`: Authentication endpoints (signin, signup, refresh)
+  - `auth/`: Auth pages with separate layout
+- **`src/frontend/components/`**: React components organized by feature
   - `ui/`: shadcn/ui components (Radix UI primitives)
   - `layout/`: App shell components (sidebar, header)
   - `provider/`: React context providers
 - **`src/configs/`**: Configuration files (routes, fonts, env, site)
-- **`src/libs/`**: Utilities and external service connections
+- **`src/utils/`**: Utilities organized by core/shared layers
 - **`src/hooks/`**: Custom React hooks
+- **`src/backend/`**: Data layer (models, services)
+- **`src/schemas/`**: Zod validation schemas
+- **`src/types/`**: TypeScript type definitions
 
-### Key Patterns
+### Provider Architecture
 
-#### Path Aliases
+**Hierarchy**: `base.tsx` → `app.tsx`
+
+- **Base provider**: QueryProvider + ThemeProvider with next-themes
+- **App provider**: Main layout with `SidebarProvider` from shadcn/ui
+
+```typescript
+// src/frontend/components/provider/base.tsx
+<QueryProvider>
+  <ThemeProvider
+    disableTransitionOnChange
+    enableSystem
+    attribute="class"
+    defaultTheme="system"
+  >
+    {children}
+  </ThemeProvider>
+</QueryProvider>
+```
+
+### Path Aliases
 
 Use `~/` prefix for all imports from `src/`:
 
@@ -32,63 +55,17 @@ import { cn } from '~/utils/core/class-merger';
 import { Button } from '~/frontend/components/ui/button';
 ```
 
-#### Provider Architecture
-
-**Hierarchy**: `base.tsx` → `theme.tsx` → `app.tsx`
-
-- **Base provider**: Wraps theme provider with next-themes configuration
-- **Theme provider**: Enables system/light/dark themes with `next-themes`
-- **App provider**: Main layout with `SidebarProvider` from shadcn/ui
-
-```typescript
-// src/frontend/components/provider/base.tsx
-<ThemeProvider
-  disableTransitionOnChange
-  enableSystem
-  attribute="class"
-  defaultTheme="system"
->
-  {children}
-</ThemeProvider>
-```
-
-#### Component Architecture
-
-- **UI components**: Use shadcn/ui pattern with `cva` for variants
-- **Layout pattern**: Sidebar navigation with `SidebarProvider` and
-  `SidebarInset`
-- **Forms**: React Hook Form with `@hookform/resolvers` and Zod schemas
-
-#### Database Connection
-
-```typescript
-import { dbConnect } from '~/utils/core/mongodb';
-// Connection is cached globally - call anytime
-await dbConnect();
-```
-
-Uses Mongoose with global caching to prevent multiple connections.
-
-#### Environment Variables
-
-Use `@t3-oss/env-nextjs` for type-safe env validation:
-
-```typescript
-import { envServer } from '~/configs/env';
-// envServer.MONGODB_URI is validated and typed
-```
-
 ## Development Workflow
 
 ### Commands
 
 ```bash
 bun run dev          # Start dev server with Turbopack
-bun run build    # Production build with Turbopack
-bun run lint     # ESLint check
-bun run lint:fix # ESLint auto-fix
-bun run format   # Prettier formatting
-bun run outdated # Check for dependency updates (uses npm-check-updates)
+bun run build        # Production build with Turbopack
+bun run lint         # ESLint check
+bun run lint:fix     # ESLint auto-fix
+bun run format       # Prettier formatting
+bun run outdated     # Check for dependency updates (uses npm-check-updates)
 ```
 
 ### Build Configuration
@@ -98,67 +75,18 @@ bun run outdated # Check for dependency updates (uses npm-check-updates)
 - **ESLint**: Next.js + TypeScript + Prettier rules
 - **Tailwind**: v4 with CSS variables and custom fonts
 
-## UI/UX Patterns
-
-### Styling
-
-- **Tailwind CSS v4**: Use CSS variables for theming in OKLCH color space
-- **Class merging**: Always use `cn()` utility for conditional classes
-- **Fonts**: Roboto variants loaded via Next.js font optimization
-- **Theme variables**: Defined in `globals.css` with light/dark variants
-
-### Components
-
-- **shadcn/ui**: Follow established component patterns with `cva` variants
-- **Icons**: Lucide React icons throughout
-- **Theming**: System/light/dark themes with `next-themes`
-- **Sidebar**: Mobile-responsive with `useSidebar` hook
-
-### Forms
-
-- **React Hook Form**: With `@hookform/resolvers` and Zod
-- **Validation**: Zod schemas in `src/schemas/` with type inference
-- **UI integration**: shadcn/ui form components with proper error handling
-
-```typescript
-// Example form pattern
-const methods = useForm<Schema>({
-  resolver: zodResolver(schema),
-  defaultValues: { /* ... */ },
-});
-
-<Form {...methods}>
-  <form onSubmit={methods.handleSubmit(onSubmit)}>
-    <FormField
-      control={methods.control}
-      name="field"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Label</FormLabel>
-          <FormControl>
-            <Input {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </form>
-</Form>
-```
-
 ## Database & API
 
 ### MongoDB
 
-- Mongoose with connection caching in `src/utils/core/mongodb.ts`
+- Mongoose with global caching to prevent multiple connections
 - Environment-based URI configuration with validation
-- Health check endpoint at `/api/database/status`
 
-### API Routes
-
-- Next.js API routes in `src/app/api/`
-- Standard NextResponse patterns
-- Error handling with proper status codes
+```typescript
+import { dbConnect } from '~/utils/core/mongodb';
+// Connection is cached globally - call anytime
+await dbConnect();
+```
 
 ### API Patterns
 
@@ -208,13 +136,61 @@ return apiError('VALIDATION_ERROR', 400, [
 - Service layer in `src/backend/services/user.service.ts`
 - Email uniqueness constraints
 
+## UI/UX Patterns
+
+### Styling
+
+- **Tailwind CSS v4**: Use CSS variables for theming in OKLCH color space
+- **Class merging**: Always use `cn()` utility for conditional classes
+- **Fonts**: Roboto variants loaded via Next.js font optimization
+- **Theme variables**: Defined in `globals.css` with light/dark variants
+
+### Components
+
+- **shadcn/ui**: Follow established component patterns with `cva` variants
+- **Icons**: Lucide React icons throughout
+- **Theming**: System/light/dark themes with `next-themes`
+- **Sidebar**: Mobile-responsive with `useSidebar` hook
+
+### Forms
+
+- **React Hook Form**: With `@hookform/resolvers` and Zod validation
+- **Validation**: Zod schemas in `src/schemas/auth.ts` with type inference
+- **UI integration**: shadcn/ui form components with proper error handling
+
+```typescript
+// Example form pattern
+const methods = useForm<Schema>({
+  resolver: zodResolver(schema),
+  defaultValues: { /* ... */ },
+});
+
+<Form {...methods}>
+  <form onSubmit={methods.handleSubmit(onSubmit)}>
+    <FormField
+      control={methods.control}
+      name="field"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Label</FormLabel>
+          <FormControl>
+            <Input {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  </form>
+</Form>
+```
+
 ## Navigation & Routing
 
 ### App Router Structure
 
 - Route groups: `(main)` for shared layout
-- Dynamic routes for notes management
-- Static routes: `/`, `/archived`, `/trash`
+- Static routes: `/`, `/archived`, `/trash` (planned)
+- Auth routes in separate layout group
 
 ### Sidebar Navigation
 
@@ -234,6 +210,21 @@ export const routes: Route[] = [
 ];
 ```
 
+## Environment Variables
+
+Use `@t3-oss/env-nextjs` for type-safe env validation:
+
+```typescript
+import { envServer } from '~/configs/env';
+// envServer.MONGODB_URI is validated and typed
+```
+
+Required variables:
+
+- `MONGODB_URI`: MongoDB connection string
+- `JWT_ACCESS_SECRET`: >=32 characters for access tokens
+- `JWT_REFRESH_SECRET`: >=32 characters for refresh tokens
+
 ## Code Quality Standards
 
 ### TypeScript
@@ -252,7 +243,7 @@ export const routes: Route[] = [
 
 - Feature-based component organization
 - Configuration files in `configs/`
-- Utilities in `libs/`
+- Utilities in `utils/core/` and `utils/shared/`
 - Custom hooks in `hooks/`
 
 ## Integration Points
@@ -266,59 +257,17 @@ export const routes: Route[] = [
 - **Fonts**: Google Fonts (Roboto variants)
 - **Icons**: Lucide React
 
-### Authentication
+## Current Implementation Status
 
-- Auth routes in `src/app/auth/` with separate layout
-- Form components in `src/frontend/components/app/auth/`
-- Schema validation in `src/schemas/auth.ts`
-
-## Deployment & Environment
-
-### Requirements
-
-- Node.js >=22
-- npm >=10.5.1
-- Bun >=1.2 (recommended)
-
-### Environment Setup
-
-- `MONGODB_URI`: Required for database connection
-- `JWT_ACCESS_SECRET`: >=32 characters for access tokens
-- `JWT_REFRESH_SECRET`: >=32 characters for refresh tokens
-- Validated at startup with helpful error messages
-
-## Common Tasks
-
-### Adding New Routes
-
-1. Add route config to `~/configs/route.ts`
-2. Create page in `src/app/(main)/[route]/page.tsx`
-3. Update sidebar navigation automatically
-
-### Adding UI Components
-
-1. Use shadcn/ui CLI: `bunx shadcn@latest add [component]`
-2. Follow existing patterns in `src/frontend/components/ui/`
-3. Use `cn()` for class merging
-
-### Database Operations
-
-1. Import `dbConnect` from `~/utils/core/mongodb`
-2. Call `await dbConnect()` before operations
-3. Use Mongoose models (when implemented)
-
-### API Development
-
-1. Create route in `src/app/api/[endpoint]/route.ts`
-2. Use `withValidation` for request parsing
-3. Wrap operations with `withDatabase`
-4. Return standardized responses with `apiSuccess`/`apiError`
-
-### Theming
-
-- Use CSS variables defined in `globals.css`
-- Theme switching handled by `next-themes`
-- System theme detection enabled
+- ✅ User authentication (signup, signin, JWT tokens)
+- ✅ Database connection with Mongoose
+- ✅ UI component library (shadcn/ui)
+- ✅ Theming system (light/dark/system)
+- ✅ Sidebar navigation layout
+- ✅ API response standardization
+- ✅ Request validation utilities
+- 🚧 Notes CRUD functionality (planned)
+- 🚧 Archive/trash features (planned)
 
 ## Key Files to Reference
 
@@ -331,6 +280,5 @@ export const routes: Route[] = [
   `cva`
 - **`src/frontend/styles/globals.css`**: Theme variables and Tailwind config
 - **`package.json`**: Scripts and dependencies
-- **`components.json`**: shadcn/ui configuration (note: css path should be
-  `src/frontend/styles/globals.css`)</content>
+- **`components.json`**: shadcn/ui configuration</content>
   <parameter name="filePath">d:\Projects\Applications\Portfolio\notes\.github\copilot-instructions.md

@@ -1,18 +1,21 @@
 'use client';
 
+import { ThemeProvider } from 'next-themes';
 import React from 'react';
 
-import { ThemeProvider } from './theme';
+import { QueryProvider } from './query';
 
-export function Provider({ children }: React.PropsWithChildren) {
+export function BaseProvider({ children }: React.PropsWithChildren) {
   return (
-    <ThemeProvider
-      disableTransitionOnChange
-      enableSystem
-      attribute="class"
-      defaultTheme="system"
-    >
-      {children}
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider
+        disableTransitionOnChange
+        enableSystem
+        attribute="class"
+        defaultTheme="system"
+      >
+        {children}
+      </ThemeProvider>
+    </QueryProvider>
   );
 }
