@@ -1,10 +1,10 @@
 import Link from 'next/link';
 
-import { AuthFormLogin } from '~/frontend/components/app/auth/form/login';
-import { AuthLogo } from '~/frontend/components/app/auth/logo';
-import { AuthSocialSso } from '~/frontend/components/app/auth/social-sso';
-import { Card, CardContent, CardHeader } from '~/frontend/components/ui/card';
-import { Separator } from '~/frontend/components/ui/separator';
+import { AuthFormLogin } from '~/components/app/auth/form/login';
+import { AuthLogo } from '~/components/app/auth/logo';
+import { AuthSocialSso } from '~/components/app/auth/social-sso';
+import { Card, CardContent, CardHeader } from '~/components/ui/card';
+import { Separator } from '~/components/ui/separator';
 
 export const metadata = {
   title: 'Login',

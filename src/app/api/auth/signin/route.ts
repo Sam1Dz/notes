@@ -1,77 +1,30 @@
-import {
-  findUserByEmail,
-  verifyPassword,
-} from '~/backend/services/user.service';
-import { loginSchema } from '~/schemas/auth';
-import type { MongoEntityId } from '~/types/core/entity';
+import { loginSchema } from '~/lib/schemas/auth';
+import * as authService from '~/lib/services/auth';
+import { ApiError } from '~/lib/utils/api/error';
 import {
   apiError,
   apiSuccess,
   internalServerError,
-} from '~/utils/core/api-response';
-import { generateAccessToken, generateRefreshToken } from '~/utils/core/jwt';
-import { stringifyObjectId, withDatabase } from '~/utils/core/mongodb';
-import { withValidation } from '~/utils/shared/validation';
+} from '~/lib/utils/api/response';
+import { withValidation } from '~/lib/utils/api/validation';
+import { withDatabase } from '~/lib/utils/database/mongodb';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await withValidation(request, loginSchema);
+    const credentials = await withValidation(request, loginSchema);
 
     return withDatabase(async () => {
-      // Find user by email
-      const user = await findUserByEmail(email);
+      const loginPayload = await authService.signIn(credentials);
 
-      if (!user) {
-        return apiError('UNAUTHORIZED', 401, [
-          {
-            detail: 'Invalid email or password',
-            attr: 'email',
-          },
-        ]);
-      }
-
-      // Verify password
-      const isPasswordValid = await verifyPassword(password, user.password);
-
-      if (!isPasswordValid) {
-        return apiError('UNAUTHORIZED', 401, [
-          {
-            detail: 'Invalid email or password',
-            attr: 'password',
-          },
-        ]);
-      }
-
-      // Generate JWT tokens
-      const accessToken = generateAccessToken({
-        userId: stringifyObjectId(user._id as MongoEntityId),
-        email: user.email,
-      });
-      const refreshToken = generateRefreshToken({
-        userId: stringifyObjectId(user._id as MongoEntityId),
-        email: user.email,
-      });
-
-      return apiSuccess(
-        'OK',
-        200,
-        {
-          user: {
-            id: stringifyObjectId(user._id as MongoEntityId),
-            name: user.name,
-            email: user.email,
-            createdAt: user.createdAt.toISOString(),
-            updatedAt: user.updatedAt.toISOString(),
-          },
-          token: {
-            access: accessToken,
-            refresh: refreshToken,
-          },
-        },
-        'Login successful',
-      );
+      return apiSuccess('OK', 200, loginPayload, 'Login successful');
     });
   } catch (error) {
+    if (error instanceof ApiError) {
+      return apiError('UNAUTHORIZED', error.status, [
+        { detail: error.message, attr: null },
+      ]);
+    }
+
     return internalServerError(error);
   }
 }

@@ -1,19 +1,19 @@
-import { findUserByEmail } from '~/backend/services/user.service';
-import { refreshTokenSchema } from '~/schemas/auth';
-import type { MongoEntityId } from '~/types/core/entity';
+import type { MongoEntityId } from '~/lib/database/type';
+import { refreshTokenSchema } from '~/lib/schemas/auth';
+import { findUserByEmail } from '~/lib/services/user';
 import {
   apiError,
   apiSuccess,
   internalServerError,
-} from '~/utils/core/api-response';
+} from '~/lib/utils/api/response';
+import { withValidation } from '~/lib/utils/api/validation';
 import {
   decodeAccessToken,
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
-} from '~/utils/core/jwt';
-import { stringifyObjectId, withDatabase } from '~/utils/core/mongodb';
-import { withValidation } from '~/utils/shared/validation';
+} from '~/lib/utils/auth/jwt';
+import { stringifyObjectId, withDatabase } from '~/lib/utils/database/mongodb';
 
 export async function POST(request: Request) {
   try {

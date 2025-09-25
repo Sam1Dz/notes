@@ -14,16 +14,18 @@ with JWT tokens. Notes functionality is planned but not yet implemented.
   - `(main)/`: Main app routes with shared sidebar layout
   - `api/auth/`: Authentication endpoints (signin, signup, refresh)
   - `auth/`: Auth pages with separate layout
-- **`src/frontend/components/`**: React components organized by feature
+- **`src/components/`**: React components organized by feature
   - `ui/`: shadcn/ui components (Radix UI primitives)
   - `layout/`: App shell components (sidebar, header)
-  - `provider/`: React context providers
-- **`src/configs/`**: Configuration files (routes, fonts, env, site)
-- **`src/utils/`**: Utilities organized by core/shared layers
-- **`src/hooks/`**: Custom React hooks
-- **`src/backend/`**: Data layer (models, services)
-- **`src/schemas/`**: Zod validation schemas
-- **`src/types/`**: TypeScript type definitions
+  - `providers/`: React context providers
+- **`src/lib/config/`**: Configuration files (routes, fonts, env, site)
+- **`src/lib/database/`**: Database models and types
+- **`src/lib/hooks/`**: Custom React hooks
+- **`src/lib/schemas/`**: Zod validation schemas
+- **`src/lib/services/`**: Business logic services
+- **`src/lib/utils/`**: Utilities organized by domain (api, auth, database,
+  common)
+- **`src/styles/`**: Global styles and Tailwind configuration
 
 ### Provider Architecture
 
@@ -33,7 +35,7 @@ with JWT tokens. Notes functionality is planned but not yet implemented.
 - **App provider**: Main layout with `SidebarProvider` from shadcn/ui
 
 ```typescript
-// src/frontend/components/provider/base.tsx
+// src/components/providers/base.tsx
 <QueryProvider>
   <ThemeProvider
     disableTransitionOnChange
@@ -51,8 +53,8 @@ with JWT tokens. Notes functionality is planned but not yet implemented.
 Use `~/` prefix for all imports from `src/`:
 
 ```typescript
-import { cn } from '~/utils/core/class-merger';
-import { Button } from '~/frontend/components/ui/button';
+import { cn } from '~/lib/utils/common/class-merger';
+import { Button } from '~/components/ui/button';
 ```
 
 ## Development Workflow
@@ -83,7 +85,7 @@ bun run outdated     # Check for dependency updates (uses npm-check-updates)
 - Environment-based URI configuration with validation
 
 ```typescript
-import { dbConnect } from '~/utils/core/mongodb';
+import { dbConnect } from '~/lib/utils/database/mongodb';
 // Connection is cached globally - call anytime
 await dbConnect();
 ```
@@ -93,7 +95,7 @@ await dbConnect();
 **Validation**: Use `withValidation` utility for request parsing:
 
 ```typescript
-import { withValidation } from '~/utils/shared/validation';
+import { withValidation } from '~/lib/utils/api/validation';
 
 export async function POST(request: Request) {
   const data = await withValidation(request, schema);
@@ -104,7 +106,7 @@ export async function POST(request: Request) {
 **Database**: Use `withDatabase` wrapper for connection management:
 
 ```typescript
-import { withDatabase } from '~/utils/core/mongodb';
+import { withDatabase } from '~/lib/utils/database/mongodb';
 
 return withDatabase(async () => {
   // Database operations here
@@ -114,9 +116,9 @@ return withDatabase(async () => {
 **Responses**: Standardized success/error responses:
 
 ```typescript
-import { apiSuccess, apiError } from '~/utils/core/api-response';
+import { apiSuccess, apiError } from '~/lib/utils/api/response';
 
-return apiSuccess('SUCCESS', 200, data, 'Operation completed');
+return apiSuccess('OK', 200, data, 'Operation completed');
 return apiError('VALIDATION_ERROR', 400, [
   { detail: 'Invalid input', attr: 'field' },
 ]);
@@ -128,12 +130,12 @@ return apiError('VALIDATION_ERROR', 400, [
 
 - Access/refresh token pattern with `jsonwebtoken`
 - Password hashing with `bcryptjs` (12 rounds)
-- Token generation utilities in `src/utils/core/jwt.ts`
+- Token generation utilities in `src/lib/utils/auth/jwt.ts`
 
 ### User Management
 
 - User model with Mongoose timestamps
-- Service layer in `src/backend/services/user.service.ts`
+- Service layer in `src/lib/services/user.ts`
 - Email uniqueness constraints
 
 ## UI/UX Patterns
@@ -143,7 +145,8 @@ return apiError('VALIDATION_ERROR', 400, [
 - **Tailwind CSS v4**: Use CSS variables for theming in OKLCH color space
 - **Class merging**: Always use `cn()` utility for conditional classes
 - **Fonts**: Roboto variants loaded via Next.js font optimization
-- **Theme variables**: Defined in `globals.css` with light/dark variants
+- **Theme variables**: Defined in `src/styles/globals.css` with light/dark
+  variants
 
 ### Components
 
@@ -155,7 +158,7 @@ return apiError('VALIDATION_ERROR', 400, [
 ### Forms
 
 - **React Hook Form**: With `@hookform/resolvers` and Zod validation
-- **Validation**: Zod schemas in `src/schemas/auth.ts` with type inference
+- **Validation**: Zod schemas in `src/lib/schemas/auth.ts` with type inference
 - **UI integration**: shadcn/ui form components with proper error handling
 
 ```typescript
@@ -194,12 +197,12 @@ const methods = useForm<Schema>({
 
 ### Sidebar Navigation
 
-- Routes defined in `~/configs/route.ts` with icon components
+- Routes defined in `~/lib/config/route.ts` with icon components
 - Active state management with `usePathname`
 - Mobile-responsive with `useSidebar` hook
 
 ```typescript
-// src/configs/route.ts
+// src/lib/config/route.ts
 export const routes: Route[] = [
   {
     label: 'Notes',
@@ -215,7 +218,7 @@ export const routes: Route[] = [
 Use `@t3-oss/env-nextjs` for type-safe env validation:
 
 ```typescript
-import { envServer } from '~/configs/env';
+import { envServer } from '~/lib/config/env';
 // envServer.MONGODB_URI is validated and typed
 ```
 
@@ -242,9 +245,10 @@ Required variables:
 ### File Organization
 
 - Feature-based component organization
-- Configuration files in `configs/`
-- Utilities in `utils/core/` and `utils/shared/`
-- Custom hooks in `hooks/`
+- Configuration files in `lib/config/`
+- Utilities in `lib/utils/` subdirectories
+- Services in `lib/services/`
+- Database models in `lib/database/models/`
 
 ## Integration Points
 
@@ -272,13 +276,12 @@ Required variables:
 ## Key Files to Reference
 
 - **`src/app/layout.tsx`**: Root layout with providers
-- **`src/frontend/components/provider/app.tsx`**: Main app structure
-- **`src/configs/route.ts`**: Navigation configuration
-- **`src/utils/core/class-merger.ts`**: Utility functions (`cn()` for class
-  merging)
-- **`src/frontend/components/ui/button.tsx`**: Component pattern example with
-  `cva`
-- **`src/frontend/styles/globals.css`**: Theme variables and Tailwind config
+- **`src/components/providers/app.tsx`**: Main app structure
+- **`src/lib/config/route.ts`**: Navigation configuration
+- **`src/lib/utils/common/class-merger.ts`**: Utility functions (`cn()` for
+  class merging)
+- **`src/components/ui/button.tsx`**: Component pattern example with `cva`
+- **`src/styles/globals.css`**: Theme variables and Tailwind config
 - **`package.json`**: Scripts and dependencies
 - **`components.json`**: shadcn/ui configuration</content>
   <parameter name="filePath">d:\Projects\Applications\Portfolio\notes\.github\copilot-instructions.md
