@@ -32,9 +32,8 @@ export type RefreshTokenSchema = z.infer<typeof refreshTokenSchema>;
 /* RESPONSE TYPES */
 export interface LoginResponse {
   user: EntityType &
-    Omit<LoginSchema, 'password'> & {
+    Omit<LoginSchema, 'password' | 'rememberMe'> & {
       name: string;
-      email: string;
     };
   token: {
     access: string;

@@ -1,68 +1,61 @@
+import { envPublic } from '~/lib/config/env';
+
+/**
+ * Represents a primitive value that can be used in URL parameters.
+ */
 type PrimitiveValue = string | number | boolean;
+
+/**
+ * Represents an array of primitive values.
+ */
 type ArrayValue = PrimitiveValue[];
+
+/**
+ * Represents a valid parameter value, which can be a primitive, an array, or null/undefined.
+ */
 type ValidParamValue = PrimitiveValue | ArrayValue | null | undefined;
 
+/**
+ * Represents a record of URL parameters where keys are strings and values are valid parameter values.
+ */
 export type UrlParamsType = Record<string, ValidParamValue>;
 
 /**
- * Generates a complete URL by combining a base URL, context path, and optional query parameters.
- * Defaults to '/api' as the base URL if not provided.
- *
- * @param context - The API endpoint context/path to append to the base URL.
+ * Generates a full URL by combining the base API URL with a context path and optional query parameters.
+ * @param context - The context path to append to the base URL.
  * @param params - Optional query parameters to include in the URL.
- * @param baseUrl - Optional base URL. Defaults to '/api'.
- * @returns The complete URL string with normalized path and query parameters.
- * @throws Error if URL construction fails.
+ * @returns The generated URL as a string.
  */
-export function generateUrl(
-  context: string,
-  params?: UrlParamsType,
-  baseUrl?: string,
-): string {
-  const base = baseUrl ?? '/api';
+export function generateUrl(context: string, params?: UrlParamsType): string {
+  const url = new URL(envPublic.NEXT_PUBLIC_API_URL);
 
-  try {
-    const url = new URL(base);
+  url.pathname = url.pathname + '/' + context;
+  url.pathname = url.pathname.replace(/\/+/g, '/');
 
-    const normalizedPath = `${url.pathname}/${context}`.replace(/\/+/g, '/');
-
-    url.pathname = normalizedPath;
-
-    if (params) {
-      url.search = generateParams(params);
-    }
-
-    return url.toString();
-  } catch (error) {
-    throw new Error(
-      `Invalid URL construction: ${error instanceof Error ? error.message : String(error)}`,
-    );
+  if (params) {
+    url.search = generateParams(params);
   }
+
+  return url.toString();
 }
 
 /**
- * Converts an object of parameters into a URL-encoded query string.
- * Handles arrays, null/undefined values, and converts all values to strings.
- *
- * @param params - The parameters object to convert to query string.
- * @returns The URL-encoded query string.
+ * Generates a query string from URL parameters.
+ * @param params - The parameters to convert into a query string.
+ * @returns The query string representation of the parameters.
  */
 export function generateParams(params: UrlParamsType): string {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value === null || value === undefined) {
-      return;
-    }
-
-    if (Array.isArray(value)) {
-      value.forEach((item) => {
-        if (item !== null && item !== undefined) {
-          searchParams.append(key, String(item));
-        }
-      });
-    } else {
-      searchParams.append(key, String(value));
+    if (value || typeof value === 'boolean') {
+      if (Array.isArray(value)) {
+        value.forEach((value) => {
+          searchParams.append(key, String(value));
+        });
+      } else {
+        searchParams.append(key, String(value));
+      }
     }
   });
 

@@ -3,11 +3,11 @@
 import { SiGithub } from 'react-icons/si';
 
 import { Button } from '~/components/ui/shadcn-studio/button';
+import { signIn } from '~/lib/sign-in';
 
 export function AuthSocialSso() {
-  const handleSocialLogin = (_provider: 'google' | 'github') => {
-    // TODO: Implement social login
-    // console.log(`Login with ${provider}`);
+  const handleSocialLogin = async () => {
+    await signIn('github');
   };
 
   return (
@@ -15,7 +15,7 @@ export function AuthSocialSso() {
       className="w-full cursor-pointer"
       scale={10}
       variant="outline"
-      onClick={() => handleSocialLogin('github')}
+      onClick={() => handleSocialLogin()}
     >
       <SiGithub />
       GitHub

@@ -1,3 +1,5 @@
+import 'server-only';
+
 import type { Model } from 'mongoose';
 
 import mongoose from 'mongoose';

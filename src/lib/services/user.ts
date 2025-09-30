@@ -1,3 +1,5 @@
+'use server';
+
 import { User } from '../database/models';
 
 /**

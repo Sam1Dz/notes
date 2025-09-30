@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   try {
     const data = await withValidation(request, registerSchema);
 
-    return withDatabase(async () => {
+    return await withDatabase(async () => {
       const newUser = await authService.signUp(data);
 
       return apiSuccess(
@@ -30,6 +30,10 @@ export async function POST(request: Request) {
         error.status,
         [{ detail: error.message, attr: 'email' }],
       );
+    }
+
+    if (error instanceof Response) {
+      return error;
     }
 
     return internalServerError(error);

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   try {
     const credentials = await withValidation(request, loginSchema);
 
-    return withDatabase(async () => {
+    return await withDatabase(async () => {
       const loginPayload = await authService.signIn(credentials);
 
       return apiSuccess('OK', 200, loginPayload, 'Login successful');
@@ -23,6 +23,10 @@ export async function POST(request: Request) {
       return apiError('UNAUTHORIZED', error.status, [
         { detail: error.message, attr: null },
       ]);
+    }
+
+    if (error instanceof Response) {
+      return error;
     }
 
     return internalServerError(error);

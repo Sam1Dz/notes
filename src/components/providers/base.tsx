@@ -3,6 +3,8 @@
 import { ThemeProvider } from 'next-themes';
 import React from 'react';
 
+import { Toaster } from '../ui/sonner';
+
 import { QueryProvider } from './query';
 
 export function BaseProvider({ children }: React.PropsWithChildren) {
@@ -15,6 +17,8 @@ export function BaseProvider({ children }: React.PropsWithChildren) {
         defaultTheme="system"
       >
         {children}
+
+        <Toaster />
       </ThemeProvider>
     </QueryProvider>
   );

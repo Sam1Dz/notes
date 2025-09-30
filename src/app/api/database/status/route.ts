@@ -3,7 +3,7 @@ import { withDatabase } from '~/lib/utils/database/mongodb';
 
 export async function GET() {
   try {
-    return withDatabase(async () => {
+    return await withDatabase(async () => {
       return apiSuccess('OK', 200, null, 'Database connected successfully');
     });
   } catch (error) {

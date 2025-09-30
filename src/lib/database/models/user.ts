@@ -1,3 +1,5 @@
+import 'server-only';
+
 import mongoose, { type Document } from 'mongoose';
 
 export interface UserModels extends Document {

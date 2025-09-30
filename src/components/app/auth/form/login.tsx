@@ -1,8 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
-import * as React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Checkbox } from '~/components/ui/checkbox';
@@ -17,11 +17,11 @@ import {
 import { Label } from '~/components/ui/label';
 import { Button } from '~/components/ui/shadcn-studio/button';
 import { Input } from '~/components/ui/shadcn-studio/input';
+import { showToast } from '~/components/ui/shadcn-studio/sonner';
 import { loginSchema, type LoginSchema } from '~/lib/schemas/auth';
+import { signIn } from '~/lib/sign-in';
 
 export function AuthFormLogin() {
-  const [isLoading, setIsLoading] = React.useState(false);
-
   const methods = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -33,16 +33,24 @@ export function AuthFormLogin() {
 
   const rememberMe = methods.watch('rememberMe');
 
-  const onSubmit = async (_data: LoginSchema) => {
-    setIsLoading(true);
-    try {
-      // TODO: Implement login logic
-      // console.log('Login data:', data);
-    } catch (error) {
-      console.error('Login error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data: LoginSchema) => {
+      await signIn('credentials', data);
+    },
+    onSuccess: () => {
+      // Handle successful login
+    },
+    onError: (error) => {
+      showToast({
+        message: 'Login Failed',
+        description: error.message,
+        type: 'error',
+      });
+    },
+  });
+
+  const onSubmit = async (data: LoginSchema) => {
+    mutate(data);
   };
 
   return (
@@ -117,11 +125,11 @@ export function AuthFormLogin() {
         {/* Submit button */}
         <Button
           className="w-full cursor-pointer"
-          disabled={isLoading}
+          disabled={isPending}
           scale={10}
           type="submit"
         >
-          {isLoading ? 'Signing in...' : 'Sign in'}
+          {isPending ? 'Signing in...' : 'Sign in'}
         </Button>
       </form>
     </Form>
