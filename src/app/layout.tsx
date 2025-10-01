@@ -1,13 +1,13 @@
 import '~/styles/globals.css';
 
-import { BaseProvider } from '~/components/providers/base';
 import {
   fontRoboto,
   fontRobotoMono,
   fontRobotoSerif,
-} from '~/lib/config/fonts';
+} from '~/core/config/fonts';
+import { BaseProvider } from '~/core/providers/base';
 
-export { metadata } from '~/lib/config/site';
+export { metadata } from '~/core/config/site';
 
 export default function Root({ children }: React.PropsWithChildren) {
   return (

@@ -10,13 +10,13 @@
     "cssVariables": true,
     "prefix": ""
   },
-  "iconLibrary": "lucide",
+  "iconLibrary": "react-icons/lu",
   "aliases": {
-    "components": "~/components",
-    "utils": "~/libs/utils",
-    "ui": "~/components/ui",
+    "components": "~/shared/components",
+    "utils": "~/utils",
+    "ui": "~/shared/components/ui",
     "lib": "~/libs",
-    "hooks": "~/hooks"
+    "hooks": "~/shared/hooks"
   },
   "registries": {}
 }

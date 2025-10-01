@@ -1,10 +1,10 @@
 import Link from 'next/link';
 
-import { AuthFormRegister } from '~/components/app/auth/form/register';
-import { AuthLogo } from '~/components/app/auth/logo';
-import { AuthSocialSso } from '~/components/app/auth/social-sso';
-import { Card, CardContent, CardHeader } from '~/components/ui/card';
-import { Separator } from '~/components/ui/separator';
+import { AuthFormRegister } from '~/features/auth/components/form/register';
+import { AuthLogo } from '~/features/auth/components/logo';
+import { AuthSocialSso } from '~/features/auth/components/social-sso';
+import { Card, CardContent, CardHeader } from '~/shared/components/ui/card';
+import { Separator } from '~/shared/components/ui/separator';
 
 export const metadata = {
   title: 'Register',

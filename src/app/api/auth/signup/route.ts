@@ -1,13 +1,13 @@
-import { registerSchema } from '~/lib/schemas/auth';
-import * as authService from '~/lib/services/auth';
-import { ApiError } from '~/lib/utils/api/error';
+import { registerSchema } from '~/features/auth/schemas/auth';
+import * as authService from '~/features/auth/services/auth';
+import { ApiError } from '~/shared/utils/api/error';
 import {
   apiError,
   apiSuccess,
   internalServerError,
-} from '~/lib/utils/api/response';
-import { withValidation } from '~/lib/utils/api/validation';
-import { withDatabase } from '~/lib/utils/database/mongodb';
+} from '~/shared/utils/api/response';
+import { withValidation } from '~/shared/utils/api/validation';
+import { withDatabase } from '~/core/lib/database/mongodb';
 
 export async function POST(request: Request) {
   try {

@@ -1,5 +1,5 @@
-import { apiSuccess, internalServerError } from '~/lib/utils/api/response';
-import { withDatabase } from '~/lib/utils/database/mongodb';
+import { apiSuccess, internalServerError } from '~/shared/utils/api/response';
+import { withDatabase } from '~/core/lib/database/mongodb';
 
 export async function GET() {
   try {
