@@ -1,10 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 
+import {
+  registerSchema,
+  type RegisterSchema,
+} from '~/features/auth/schemas/auth';
 import {
   Form,
   FormControl,
@@ -15,10 +18,7 @@ import {
 } from '~/shared/components/ui/form';
 import { Button } from '~/shared/components/ui/shadcn-studio/button';
 import { Input } from '~/shared/components/ui/shadcn-studio/input';
-import {
-  registerSchema,
-  type RegisterSchema,
-} from '~/features/auth/schemas/auth';
+import { InputPassword } from '~/shared/components/ui/shadcn-studio/input-password';
 
 export function AuthFormRegister() {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -95,11 +95,7 @@ export function AuthFormRegister() {
               <FormItem>
                 <FormLabel isRequired>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Create a password"
-                    type="password"
-                    {...field}
-                  />
+                  <InputPassword placeholder="Create a password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,9 +110,8 @@ export function AuthFormRegister() {
               <FormItem>
                 <FormLabel isRequired>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputPassword
                     placeholder="Confirm your password"
-                    type="password"
                     {...field}
                   />
                 </FormControl>
@@ -135,19 +130,6 @@ export function AuthFormRegister() {
         >
           {isLoading ? 'Creating account...' : 'Create account'}
         </Button>
-
-        {/* Sign in link */}
-        <div className="text-center">
-          <p className="text-muted-foreground text-sm">
-            Already have an account?{' '}
-            <Link
-              className="text-primary hover:text-primary/80 font-medium transition-colors"
-              href="/auth/login"
-            >
-              Sign in
-            </Link>
-          </p>
-        </div>
       </form>
     </Form>
   );

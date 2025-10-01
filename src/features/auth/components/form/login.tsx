@@ -5,6 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 
+import { loginSchema, type LoginSchema } from '~/features/auth/schemas/auth';
+import { signIn } from '~/features/auth/sign-in';
 import { Checkbox } from '~/shared/components/ui/checkbox';
 import {
   Form,
@@ -17,9 +19,8 @@ import {
 import { Label } from '~/shared/components/ui/label';
 import { Button } from '~/shared/components/ui/shadcn-studio/button';
 import { Input } from '~/shared/components/ui/shadcn-studio/input';
+import { InputPassword } from '~/shared/components/ui/shadcn-studio/input-password';
 import { showToast } from '~/shared/components/ui/shadcn-studio/sonner';
-import { loginSchema, type LoginSchema } from '~/features/auth/schemas/auth';
-import { signIn } from '~/features/auth/sign-in';
 
 export function AuthFormLogin() {
   const methods = useForm<LoginSchema>({
@@ -84,10 +85,9 @@ export function AuthFormLogin() {
               <FormItem>
                 <FormLabel isRequired>Password</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputPassword
                     required
                     placeholder="Enter your password"
-                    type="password"
                     {...field}
                   />
                 </FormControl>

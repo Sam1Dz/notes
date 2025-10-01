@@ -37,7 +37,8 @@ export async function signIn(
               email: data.user.email,
             },
             token: { access: data.token.access, refresh: data.token.refresh },
-            exp: decodedToken.exp,
+            expirate: decodedToken.exp,
+            remember: credentials.rememberMe || false,
           });
 
           return data;
@@ -49,10 +50,6 @@ export async function signIn(
           const message = error.errors.map((error) => error.detail).join(', ');
 
           throw new Error(message);
-        }
-
-        if (error instanceof Error) {
-          throw new Error(error.message);
         }
 
         throw new Error('Login failed with unknown reason!');

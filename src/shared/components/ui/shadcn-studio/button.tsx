@@ -117,7 +117,7 @@ export function Button({
       ref={buttonRef}
       className={cn(
         buttonVariants({ variant, size }),
-        'relative overflow-hidden',
+        'relative cursor-pointer overflow-hidden',
         className,
       )}
       data-slot="ripple-button"

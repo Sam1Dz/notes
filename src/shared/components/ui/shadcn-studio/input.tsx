@@ -31,15 +31,25 @@ interface InputProps extends React.ComponentProps<'input'> {
   error?: boolean;
   /** Error message displayed when error is true */
   errorMessage?: string;
+  /** Button component to render connected to the input end */
+  endButton?: React.ComponentType<Record<string, unknown>>;
+  /** Props to pass to the end button */
+  endButtonProps?: Record<string, unknown>;
+  /** Inline button component to render at the input end */
+  endInlineButton?: React.ComponentType<Record<string, unknown>>;
+  /** Props to pass to the end inline button */
+  endInlineButtonProps?: Record<string, unknown>;
 }
 
 /**
- * Enhanced Input component with label, icon, helper text, and error support.
+ * Enhanced Input component with label, icon, helper text, error support, and button integration.
  * Extends the base shadcn Input component with additional features:
  * - Optional label with required asterisk and hint text
  * - Start and end icons with automatic positioning
  * - Helper text with start/end positioning
  * - Error state with custom error messages
+ * - Connected end buttons (like download/subscribe buttons)
+ * - Inline end buttons (positioned inside input, like send button)
  * - Granular class name control
  * - Screen reader support for icons
  * - Proper accessibility attributes
@@ -53,38 +63,38 @@ interface InputProps extends React.ComponentProps<'input'> {
  * @param hintText - Small hint text displayed next to the label
  * @param error - Error state of the input
  * @param errorMessage - Error message to display when error is true
+ * @param endButton - Button component to render connected to input end
+ * @param endButtonProps - Props to pass to the connected end button
+ * @param endInlineButton - Button component to render inline at input end
+ * @param endInlineButtonProps - Props to pass to the inline end button
  * @param props - Standard HTML input element props
- * @returns JSX input element with label and optional icons
+ * @returns JSX input element with label and optional icons/buttons
  *
  * @example
  * ```tsx
  * // Basic input with label
  * <Input label="Email" type="email" placeholder="Enter your email" />
  *
- * // Required input with helper text
+ * // Input with connected button
  * <Input
  *   label="Email"
  *   type="email"
  *   placeholder="Enter your email"
- *   required
- *   helperText="We'll never share your email with anyone else."
+ *   endButton={Button}
+ *   endButtonProps={{ children: "Subscribe", variant: "default" }}
  * />
  *
- * // Input with error
+ * // Input with inline button
  * <Input
- *   label="Email"
- *   type="email"
- *   placeholder="Enter your email"
- *   error
- *   errorMessage="This email is invalid."
- * />
- *
- * // Input with hint text
- * <Input
- *   label="Email"
- *   type="email"
- *   placeholder="Enter your email"
- *   hintText="Optional field"
+ *   label="Message"
+ *   type="text"
+ *   placeholder="Type a message"
+ *   endInlineButton={Button}
+ *   endInlineButtonProps={{
+ *     children: <SendIcon />,
+ *     variant: "ghost",
+ *     size: "icon"
+ *   }}
  * />
  * ```
  */
@@ -98,6 +108,10 @@ export function Input({
   hintText,
   error,
   errorMessage,
+  endButton: EndButton,
+  endButtonProps,
+  endInlineButton: EndInlineButton,
+  endInlineButtonProps,
   ...props
 }: InputProps) {
   const id = React.useId();
@@ -106,6 +120,10 @@ export function Input({
   const hasError = error || props['aria-invalid'];
   const displayHelperText = hasError ? errorMessage : helperText;
   const isRequired = props.required;
+
+  // Determine rendering mode
+  const hasEndButton = !!EndButton;
+  const hasEndInlineButton = !!EndInlineButton;
 
   return (
     <div className={cn('w-full space-y-2', classNames?.container)}>
@@ -120,34 +138,66 @@ export function Input({
           )}
         </div>
       )}
-      <div className="relative">
-        {StartIcon && (
-          <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-            <StartIcon className="size-4" />
-            <span className="sr-only">{label || 'Icon'}</span>
-          </div>
-        )}
-        <ShadcnInput
-          aria-invalid={hasError}
-          className={cn(
-            StartIcon && 'ps-9',
-            EndIcon && 'pe-9',
-            'peer',
-            hasError &&
-              'aria-invalid:ring-error/20 dark:aria-invalid:ring-error/40 aria-invalid:border-error',
-            classNames?.input,
+      {hasEndButton ? (
+        <div className="flex rounded-md shadow-xs">
+          <ShadcnInput
+            aria-invalid={hasError}
+            className={cn(
+              StartIcon && 'ps-9',
+              'peer -me-px rounded-r-none shadow-none focus-visible:z-1',
+              hasError &&
+                'aria-invalid:ring-error/20 dark:aria-invalid:ring-error/40 aria-invalid:border-error',
+              classNames?.input,
+            )}
+            id={id}
+            {...props}
+            required={false}
+          />
+          <EndButton className="rounded-l-none" {...endButtonProps} />
+        </div>
+      ) : (
+        <div className="relative">
+          {StartIcon && (
+            <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+              <StartIcon className="size-4" />
+              <span className="sr-only">{label || 'Icon'}</span>
+            </div>
           )}
-          id={id}
-          {...props}
-          required={false}
-        />
-        {EndIcon && (
-          <div className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 peer-disabled:opacity-50">
-            <EndIcon className="size-4" />
-            <span className="sr-only">{label || 'Icon'}</span>
-          </div>
-        )}
-      </div>
+          <ShadcnInput
+            aria-invalid={hasError}
+            className={cn(
+              StartIcon && 'ps-9',
+              EndIcon && 'pe-9',
+              hasEndInlineButton && 'pr-9',
+              'peer',
+              hasError &&
+                'aria-invalid:ring-error/20 dark:aria-invalid:ring-error/40 aria-invalid:border-error',
+              classNames?.input,
+            )}
+            id={id}
+            {...props}
+            required={false}
+          />
+          {EndIcon && (
+            <div className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 peer-disabled:opacity-50">
+              <EndIcon className="size-4" />
+              <span className="sr-only">{label || 'Icon'}</span>
+            </div>
+          )}
+          {hasEndInlineButton && (
+            <div className="absolute inset-y-0 right-0">
+              <EndInlineButton
+                className="text-muted-foreground focus-visible:ring-ring/50 h-full w-9 rounded-l-none hover:bg-transparent"
+                size="icon"
+                tabIndex={-1}
+                type="button"
+                variant="ghost"
+                {...endInlineButtonProps}
+              />
+            </div>
+          )}
+        </div>
+      )}
       {displayHelperText && (
         <p
           className={cn(

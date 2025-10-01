@@ -19,7 +19,8 @@ export interface SessionData {
     access: string;
     refresh: string;
   };
-  exp: number;
+  expirate: number;
+  remember: boolean;
 }
 
 /**
@@ -76,7 +77,7 @@ export async function createSession(data: SessionData) {
   cookieStore.set('notes.session-token', session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    expires: new Date(data.exp * 1000),
+    expires: new Date(data.expirate * 1000),
     sameSite: 'lax',
     path: '/',
   });
